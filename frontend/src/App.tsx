@@ -7,9 +7,21 @@ function App() {
   return (
     <Layout>
       <div className="flex gap-4 mb-8">
-        <Button variant="primary">Primario</Button>
-        <Button variant="secondary">Secundario</Button>
-        <Button variant="ghost">Ghost</Button>
+        <div data-decada="70s" className="p-8">
+          <Button variant="primary">Primario 70s</Button>
+        </div>
+
+        <div data-decada="80s" className="p-8">
+          <Button variant="primary">Primario 80s</Button>
+        </div>
+
+        <div data-decada="90s" className="p-8">
+          <Button variant="primary">Primario 90s</Button>
+        </div>
+
+        <div data-decada="2000s" className="p-8">
+          <Button variant="primary">Primario 2000s</Button>
+        </div>
       </div>
 
       <Card

@@ -15,7 +15,9 @@
 
   --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
   --font-heading-70s: "Bebas Neue", var(--font-sans);
+  --font-heading-80s: "Orbitron", var(--font-sans);
   --font-heading-90s: "VT323", var(--font-sans);
+  --font-heading-2000s: "Trebuchet MS", "Verdana", var(--font-sans);
   --font-mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--font-sans);
@@ -42,6 +44,15 @@
   --color-text: #f0e4d0;
 }
 
+/* Tema década 80s */
+[data-decada="80s"] {
+  --color-bg: #12071f;
+  --color-bg-secondary: #1f0f38;
+  --color-accent: #ff2fb5;
+  --color-accent-secondary: #00f0ff;
+  --color-text: #f2e9ff;
+}
+
 /* Tema década 90s */
 [data-decada="90s"] {
   --color-bg: #1a1a2e;
@@ -49,6 +60,15 @@
   --color-accent: #e0218a;
   --color-accent-secondary: #00d4d4;
   --color-text: #eaeaf5;
+}
+
+/* Tema década 2000s */
+[data-decada="2000s"] {
+  --color-bg: #1c2b2e;
+  --color-bg-secondary: #2a3c3f;
+  --color-accent: #6bc94b;
+  --color-accent-secondary: #5bb8e8;
+  --color-text: #eef2f0;
 }
 
 @theme {
@@ -64,7 +84,9 @@
   --color-success: var(--color-success);
   --font-sans: var(--font-sans);
   --font-heading-70s: var(--font-heading-70s);
+  --font-heading-80s: var(--font-heading-80s);
   --font-heading-90s: var(--font-heading-90s);
+  --font-heading-2000s: var(--font-heading-2000s);
   --font-mono: var(--font-mono);
 }
 
