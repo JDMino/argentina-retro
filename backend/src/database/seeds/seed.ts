@@ -7,13 +7,14 @@ import { Imagen } from '../../modules/multimedia/entities/imagen.entity';
 import { Video } from '../../modules/multimedia/entities/video.entity';
 import { Etiqueta } from '../../modules/contenido/entities/etiqueta.entity';
 import { ContenidoEtiqueta } from '../../modules/contenido/entities/contenido-etiqueta.entity';
+import { Playlist } from '../../modules/playlists/entities/playlist.entity';
 
 async function seed() {
   await AppDataSource.initialize();
   console.log('Conectado a la base de datos, limpiando tablas...');
 
   await AppDataSource.query(
-    'TRUNCATE TABLE contenido_etiquetas, imagenes, videos, contenidos, etiquetas, categorias, decadas RESTART IDENTITY CASCADE;',
+    'TRUNCATE TABLE contenido_etiquetas, imagenes, videos, contenidos, etiquetas, categorias, decadas, playlists RESTART IDENTITY CASCADE;',
   );
 
   console.log('Sembrando datos...');
@@ -23,6 +24,7 @@ async function seed() {
   const contenidoRepo = AppDataSource.getRepository(Contenido);
   const etiquetaRepo = AppDataSource.getRepository(Etiqueta);
   const contenidoEtiquetaRepo = AppDataSource.getRepository(ContenidoEtiqueta);
+  const playlistRepo = AppDataSource.getRepository(Playlist);
 
   // ---------- Décadas ----------
 
@@ -71,6 +73,44 @@ async function seed() {
       descripcion: 'Internet hogareño, MSN Messenger y la explosión de los cyber cafés.',
       paleta: { primario: '#6BC94B', secundario: '#5BB8E8', acento: '#FFFFFF' },
       orden: 4,
+    }),
+  );
+
+  // ---------- Playlists ----------
+
+  await playlistRepo.save(
+    playlistRepo.create({
+      nombre: 'Rock nacional de los 70',
+      youtubePlaylistId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
+      descripcion: 'Los clásicos del rock argentino que marcaron la década.',
+      decadaId: decada70.id,
+    }),
+  );
+
+  await playlistRepo.save(
+    playlistRepo.create({
+      nombre: 'Grandes éxitos de los 80',
+      youtubePlaylistId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
+      descripcion: 'Synth, pop y rock ochentoso.',
+      decadaId: decada80.id,
+    }),
+  );
+
+  await playlistRepo.save(
+    playlistRepo.create({
+      nombre: 'Lo mejor de los 90',
+      youtubePlaylistId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
+      descripcion: 'Soda Stereo, Los Piojos y compañía.',
+      decadaId: decada90.id,
+    }),
+  );
+
+  await playlistRepo.save(
+    playlistRepo.create({
+      nombre: 'Himnos de los 2000',
+      youtubePlaylistId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
+      descripcion: 'La música que sonaba en el cyber y en la radio.',
+      decadaId: decada2000.id,
     }),
   );
 
@@ -289,7 +329,7 @@ async function seed() {
     `  Categorías: ${catMusica.nombre}, ${catTV.nombre}, ${catTecnologia.nombre}, ${catDeportes.nombre}, ${catPublicidades.nombre}, ${catGolosinas.nombre}`,
   );
   console.log('  Contenido: 9 items de ejemplo, distribuidos en las 4 décadas con al menos 2 categorías cada una');
-
+  console.log('  Playlists: 1 por década (4 en total)');
   await AppDataSource.destroy();
 }
 

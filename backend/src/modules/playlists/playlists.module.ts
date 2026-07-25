@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Playlist } from './entities/playlist.entity';
+import { PlaylistsService } from './playlists.service';
+import { PlaylistsController } from './playlists.controller';
 
-// Módulo mínimo: solo registra la entidad para que las relaciones
-// (Decada.playlists) resuelvan. El CRUD completo llega en Etapa 5.
 @Module({
   imports: [TypeOrmModule.forFeature([Playlist])],
-  exports: [TypeOrmModule],
+  controllers: [PlaylistsController],
+  providers: [PlaylistsService],
+  exports: [PlaylistsService],
 })
 export class PlaylistsModule {}

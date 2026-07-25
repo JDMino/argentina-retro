@@ -5,6 +5,8 @@ import { decadaThemeVars } from './decadas.theme'
 import { EpocaEffect } from './effects/EpocaEffect'
 import { WindowFrame } from '../../shared/components/ui/WindowFrame'
 import { Card } from '../../shared/components/ui/Card'
+import { usePlaylist } from './usePlaylist'
+import { PlaylistPlayer } from './PlaylistPlayer'
 
 export function DecadaPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -16,6 +18,7 @@ export function DecadaPage() {
     loading: loadingCategorias,
     error: errorCategorias,
   } = useCategorias(decada?.id)
+  const { playlist, loading: loadingPlaylist } = usePlaylist(decada?.id)
 
   if (loading) return <p>Cargando...</p>
   if (error) return <p className="text-error">{error}</p>
@@ -36,6 +39,7 @@ export function DecadaPage() {
       {descripcion}
 
       <div className="relative z-10 mt-8">
+        {!loadingPlaylist && playlist && <PlaylistPlayer playlist={playlist} />}
         {loadingCategorias && <p>Cargando categorías...</p>}
 
         {errorCategorias && <p className="text-error">{errorCategorias}</p>}
