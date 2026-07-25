@@ -26,6 +26,17 @@ export class CategoriasService {
     return this.categoriasRepository.find({ order: { orden: 'ASC' } });
   }
 
+  async findByDecada(decadaId: string): Promise<Categoria[]> {
+    return this.categoriasRepository
+      .createQueryBuilder('categoria')
+      .innerJoin('categoria.contenidos', 'contenido')
+      .where('contenido.decadaId = :decadaId', { decadaId })
+      .andWhere('categoria.activa = :activa', { activa: true })
+      .orderBy('categoria.orden', 'ASC')
+      .distinct(true)
+      .getMany();
+  }
+
   async findOne(id: string): Promise<Categoria> {
     const categoria = await this.categoriasRepository.findOne({ where: { id } });
     if (!categoria) {

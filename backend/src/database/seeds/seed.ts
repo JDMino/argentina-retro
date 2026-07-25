@@ -10,13 +10,21 @@ import { ContenidoEtiqueta } from '../../modules/contenido/entities/contenido-et
 
 async function seed() {
   await AppDataSource.initialize();
-  console.log('Conectado a la base de datos, sembrando datos...');
+  console.log('Conectado a la base de datos, limpiando tablas...');
+
+  await AppDataSource.query(
+    'TRUNCATE TABLE contenido_etiquetas, imagenes, videos, contenidos, etiquetas, categorias, decadas RESTART IDENTITY CASCADE;',
+  );
+
+  console.log('Sembrando datos...');
 
   const decadaRepo = AppDataSource.getRepository(Decada);
   const categoriaRepo = AppDataSource.getRepository(Categoria);
   const contenidoRepo = AppDataSource.getRepository(Contenido);
   const etiquetaRepo = AppDataSource.getRepository(Etiqueta);
   const contenidoEtiquetaRepo = AppDataSource.getRepository(ContenidoEtiqueta);
+
+  // ---------- Décadas ----------
 
   const decada70 = await decadaRepo.save(
     decadaRepo.create({
@@ -66,6 +74,8 @@ async function seed() {
     }),
   );
 
+  // ---------- Categorías ----------
+
   const catMusica = await categoriaRepo.save(
     categoriaRepo.create({ nombre: 'Música', slug: 'musica', icono: 'music', orden: 1 }),
   );
@@ -75,44 +85,32 @@ async function seed() {
   const catTecnologia = await categoriaRepo.save(
     categoriaRepo.create({ nombre: 'Tecnología', slug: 'tecnologia', icono: 'cpu', orden: 3 }),
   );
+  const catDeportes = await categoriaRepo.save(
+    categoriaRepo.create({ nombre: 'Deportes', slug: 'deportes', icono: 'trophy', orden: 4 }),
+  );
+  const catPublicidades = await categoriaRepo.save(
+    categoriaRepo.create({ nombre: 'Publicidades', slug: 'publicidades', icono: 'megaphone', orden: 5 }),
+  );
+  const catGolosinas = await categoriaRepo.save(
+    categoriaRepo.create({ nombre: 'Golosinas', slug: 'golosinas', icono: 'candy', orden: 6 }),
+  );
+
+  // ---------- Etiquetas ----------
 
   const etRock = await etiquetaRepo.save(etiquetaRepo.create({ nombre: 'Rock Nacional', slug: 'rock-nacional' }));
   const etConsolas = await etiquetaRepo.save(etiquetaRepo.create({ nombre: 'Consolas', slug: 'consolas' }));
-
-  const contenido1 = await contenidoRepo.save(
-    contenidoRepo.create({
-      titulo: 'Serú Girán se separa',
-      slug: 'seru-giran-se-separa',
-      descripcion: 'El fin de una de las bandas más influyentes del rock nacional.',
-      anio: 1982,
-      decadaId: decada80.id,
-      categoriaId: catMusica.id,
-      videos: [{ youtubeVideoId: 'dQw4w9WgXcQ', titulo: 'Serú Girán en vivo', orden: 0 } as Video],
-      imagenes: [{ url: 'https://example.com/images/seru-giran.jpg', textoAlternativo: 'Serú Girán en vivo', orden: 0 } as Imagen],
-    }),
+  const etMundial = await etiquetaRepo.save(etiquetaRepo.create({ nombre: 'Mundiales', slug: 'mundiales' }));
+  const etPublicidadClasica = await etiquetaRepo.save(
+    etiquetaRepo.create({ nombre: 'Publicidad Clásica', slug: 'publicidad-clasica' }),
+  );
+  const etInternet = await etiquetaRepo.save(etiquetaRepo.create({ nombre: 'Internet', slug: 'internet' }));
+  const etMarcasArgentinas = await etiquetaRepo.save(
+    etiquetaRepo.create({ nombre: 'Marcas Argentinas', slug: 'marcas-argentinas' }),
   );
 
-  await contenidoEtiquetaRepo.save(
-    contenidoEtiquetaRepo.create({ contenidoId: contenido1.id, etiquetaId: etRock.id }),
-  );
+  // ---------- Contenido: Los 70 ----------
 
-  const contenido2 = await contenidoRepo.save(
-    contenidoRepo.create({
-      titulo: 'Llega la Family Game a Argentina',
-      slug: 'family-game-argentina',
-      descripcion: 'El clon de la NES que popularizó los videojuegos en los hogares argentinos.',
-      anio: 1990,
-      decadaId: decada90.id,
-      categoriaId: catTecnologia.id,
-      imagenes: [{ url: 'https://example.com/images/family-game.jpg', textoAlternativo: 'Consola Family Game', orden: 0 } as Imagen],
-    }),
-  );
-
-  await contenidoEtiquetaRepo.save(
-    contenidoEtiquetaRepo.create({ contenidoId: contenido2.id, etiquetaId: etConsolas.id }),
-  );
-
-  await contenidoRepo.save(
+  const grandePa = await contenidoRepo.save(
     contenidoRepo.create({
       titulo: "Estreno de Grande Pa'",
       slug: 'estreno-grande-pa',
@@ -120,13 +118,177 @@ async function seed() {
       anio: 1975,
       decadaId: decada70.id,
       categoriaId: catTV.id,
+      imagenes: [
+        { url: 'https://picsum.photos/seed/grande-pa/600/400', textoAlternativo: "Grande Pa'", orden: 0 } as Imagen,
+      ],
     }),
+  );
+
+  const mundial78 = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Mundial 78: Argentina Campeón',
+      slug: 'mundial-78-argentina-campeon',
+      descripcion: 'Argentina se consagra campeón del mundo por primera vez, jugando de local.',
+      anio: 1978,
+      decadaId: decada70.id,
+      categoriaId: catDeportes.id,
+      enlacesExternos: [
+        { etiqueta: 'Wikipedia', url: 'https://es.wikipedia.org/wiki/Copa_Mundial_de_F%C3%BAtbol_de_1978' },
+      ],
+      imagenes: [
+        { url: 'https://picsum.photos/seed/mundial-78/600/400', textoAlternativo: 'Mundial 78', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: mundial78.id, etiquetaId: etMundial.id }),
+  );
+
+  // ---------- Contenido: Los 80 ----------
+
+  const seruGiran = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Serú Girán se separa',
+      slug: 'seru-giran-se-separa',
+      descripcion: 'El fin de una de las bandas más influyentes del rock nacional.',
+      anio: 1982,
+      decadaId: decada80.id,
+      categoriaId: catMusica.id,
+      enlacesExternos: [
+        { etiqueta: 'Wikipedia', url: 'https://es.wikipedia.org/wiki/Ser%C3%BA_Gir%C3%A1n' },
+      ],
+      videos: [{ youtubeVideoId: 'dQw4w9WgXcQ', titulo: 'Serú Girán en vivo', orden: 0 } as Video],
+      imagenes: [
+        { url: 'https://picsum.photos/seed/seru-giran/600/400', textoAlternativo: 'Serú Girán en vivo', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: seruGiran.id, etiquetaId: etRock.id }),
+  );
+
+  const publicidadTerrabusi = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Publicidad de galletitas Terrabusi',
+      slug: 'publicidad-galletitas-terrabusi',
+      descripcion: 'Un clásico de la tanda televisiva de los años 80.',
+      anio: 1985,
+      decadaId: decada80.id,
+      categoriaId: catPublicidades.id,
+      videos: [{ youtubeVideoId: 'dQw4w9WgXcQ', titulo: 'Comercial Terrabusi', orden: 0 } as Video],
+      imagenes: [
+        { url: 'https://picsum.photos/seed/terrabusi/600/400', textoAlternativo: 'Publicidad Terrabusi', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: publicidadTerrabusi.id, etiquetaId: etPublicidadClasica.id }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: publicidadTerrabusi.id, etiquetaId: etMarcasArgentinas.id }),
+  );
+
+  // ---------- Contenido: Los 90 ----------
+
+  const familyGame = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Llega la Family Game a Argentina',
+      slug: 'family-game-argentina',
+      descripcion: 'El clon de la NES que popularizó los videojuegos en los hogares argentinos.',
+      anio: 1990,
+      decadaId: decada90.id,
+      categoriaId: catTecnologia.id,
+      imagenes: [
+        { url: 'https://picsum.photos/seed/family-game/600/400', textoAlternativo: 'Consola Family Game', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: familyGame.id, etiquetaId: etConsolas.id }),
+  );
+
+  const sodaStereo = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Soda Stereo lanza Dynamo',
+      slug: 'soda-stereo-lanza-dynamo',
+      descripcion: 'El álbum más experimental de la banda, adelantado a su época.',
+      anio: 1992,
+      decadaId: decada90.id,
+      categoriaId: catMusica.id,
+      enlacesExternos: [
+        { etiqueta: 'Wikipedia', url: 'https://es.wikipedia.org/wiki/Dynamo_(%C3%A1lbum)' },
+      ],
+      imagenes: [
+        { url: 'https://picsum.photos/seed/soda-dynamo/600/400', textoAlternativo: 'Soda Stereo Dynamo', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: sodaStereo.id, etiquetaId: etRock.id }),
+  );
+
+  const bonOBon = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Bon o Bon cumple 10 años',
+      slug: 'bon-o-bon-diez-anios',
+      descripcion: 'La golosina de chocolate y maní se convierte en un clásico argentino.',
+      anio: 1994,
+      decadaId: decada90.id,
+      categoriaId: catGolosinas.id,
+      imagenes: [
+        { url: 'https://picsum.photos/seed/bon-o-bon/600/400', textoAlternativo: 'Bon o Bon', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: bonOBon.id, etiquetaId: etMarcasArgentinas.id }),
+  );
+
+  // ---------- Contenido: Los 2000 ----------
+
+  const msnMessenger = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'MSN Messenger llega a los hogares argentinos',
+      slug: 'msn-messenger-argentina',
+      descripcion: 'El chat que definió a toda una generación en los cyber cafés y el hogar.',
+      anio: 2003,
+      decadaId: decada2000.id,
+      categoriaId: catTecnologia.id,
+      enlacesExternos: [
+        { etiqueta: 'Wikipedia', url: 'https://es.wikipedia.org/wiki/Windows_Live_Messenger' },
+      ],
+      imagenes: [
+        { url: 'https://picsum.photos/seed/msn-messenger/600/400', textoAlternativo: 'MSN Messenger', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: msnMessenger.id, etiquetaId: etInternet.id }),
+  );
+
+  const mundial2002 = await contenidoRepo.save(
+    contenidoRepo.create({
+      titulo: 'Argentina en el Mundial 2002',
+      slug: 'argentina-mundial-2002',
+      descripcion: 'Una eliminación en primera ronda que marcó a toda una generación de hinchas.',
+      anio: 2002,
+      decadaId: decada2000.id,
+      categoriaId: catDeportes.id,
+      imagenes: [
+        { url: 'https://picsum.photos/seed/mundial-2002/600/400', textoAlternativo: 'Mundial 2002', orden: 0 } as Imagen,
+      ],
+    }),
+  );
+  await contenidoEtiquetaRepo.save(
+    contenidoEtiquetaRepo.create({ contenidoId: mundial2002.id, etiquetaId: etMundial.id }),
   );
 
   console.log('Seed completado:');
   console.log(`  Décadas: ${decada70.nombre}, ${decada80.nombre}, ${decada90.nombre}, ${decada2000.nombre}`);
-  console.log(`  Categorías: ${catMusica.nombre}, ${catTV.nombre}, ${catTecnologia.nombre}`);
-  console.log('  Contenido: 3 items de ejemplo con multimedia y etiquetas');
+  console.log(
+    `  Categorías: ${catMusica.nombre}, ${catTV.nombre}, ${catTecnologia.nombre}, ${catDeportes.nombre}, ${catPublicidades.nombre}, ${catGolosinas.nombre}`,
+  );
+  console.log('  Contenido: 9 items de ejemplo, distribuidos en las 4 décadas con al menos 2 categorías cada una');
 
   await AppDataSource.destroy();
 }

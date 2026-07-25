@@ -12,7 +12,7 @@ export class Categoria extends BaseEntity {
   slug: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
-icono: string | null;
+  icono: string | null;
 
   @Column({ type: 'text', nullable: true })
   descripcion: string | null;

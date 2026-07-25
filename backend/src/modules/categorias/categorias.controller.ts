@@ -7,12 +7,14 @@ import {
   Body,
   Param,
   ParseUUIDPipe,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+import { FindCategoriasQueryDto } from './dto/find-categorias-query.dto';
 
 @Controller('categorias')
 export class CategoriasController {
@@ -24,7 +26,10 @@ export class CategoriasController {
   }
 
   @Get()
-  findAll() {
+  async findAll(@Query() query: FindCategoriasQueryDto) {
+    if (query.decadaId) {
+      return this.categoriasService.findByDecada(query.decadaId);
+    }
     return this.categoriasService.findAll();
   }
 

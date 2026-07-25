@@ -5,6 +5,9 @@ import { Layout } from './shared/components/layout/Layout'
 import { HomePage } from './modules/home/HomePage'
 import { DecadaPage } from './modules/decadas/DecadaPage'
 import { WarpTunnel } from './shared/components/effects/WarpTunnel'
+import { CategoriaPage } from './modules/categorias/CategoriaPage'
+import { ContenidoDetallePage } from './modules/contenido/ContenidoDetallePage'
+
 
 const WARP_DURATION = 700
 
@@ -65,6 +68,8 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'decada/:slug', element: <DecadaPage /> },
+      { path: 'decada/:slug/categoria/:categoriaSlug', element: <CategoriaPage /> },
+      { path: 'decada/:slug/categoria/:categoriaSlug/:contenidoSlug', element: <ContenidoDetallePage /> },
     ],
   },
 ])
