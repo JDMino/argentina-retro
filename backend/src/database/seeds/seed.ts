@@ -54,6 +54,18 @@ async function seed() {
     }),
   );
 
+  const decada2000 = await decadaRepo.save(
+    decadaRepo.create({
+      nombre: 'Los 2000',
+      slug: 'los-2000',
+      anioInicio: 2000,
+      anioFin: 2009,
+      descripcion: 'Internet hogareño, MSN Messenger y la explosión de los cyber cafés.',
+      paleta: { primario: '#6BC94B', secundario: '#5BB8E8', acento: '#FFFFFF' },
+      orden: 4,
+    }),
+  );
+
   const catMusica = await categoriaRepo.save(
     categoriaRepo.create({ nombre: 'Música', slug: 'musica', icono: 'music', orden: 1 }),
   );
@@ -112,7 +124,7 @@ async function seed() {
   );
 
   console.log('Seed completado:');
-  console.log(`  Décadas: ${decada70.nombre}, ${decada80.nombre}, ${decada90.nombre}`);
+  console.log(`  Décadas: ${decada70.nombre}, ${decada80.nombre}, ${decada90.nombre}, ${decada2000.nombre}`);
   console.log(`  Categorías: ${catMusica.nombre}, ${catTV.nombre}, ${catTecnologia.nombre}`);
   console.log('  Contenido: 3 items de ejemplo con multimedia y etiquetas');
 
