@@ -8,13 +8,14 @@ import { Video } from '../../modules/multimedia/entities/video.entity';
 import { Etiqueta } from '../../modules/contenido/entities/etiqueta.entity';
 import { ContenidoEtiqueta } from '../../modules/contenido/entities/contenido-etiqueta.entity';
 import { Playlist } from '../../modules/playlists/entities/playlist.entity';
+import { Rol } from '../../modules/roles/entities/rol.entity';
 
 async function seed() {
   await AppDataSource.initialize();
   console.log('Conectado a la base de datos, limpiando tablas...');
 
   await AppDataSource.query(
-    'TRUNCATE TABLE contenido_etiquetas, imagenes, videos, contenidos, etiquetas, categorias, decadas, playlists RESTART IDENTITY CASCADE;',
+    'TRUNCATE TABLE contenido_etiquetas, imagenes, videos, contenidos, etiquetas, categorias, decadas, playlists, usuario_roles, usuarios, roles RESTART IDENTITY CASCADE;',
   );
 
   console.log('Sembrando datos...');
@@ -25,7 +26,16 @@ async function seed() {
   const etiquetaRepo = AppDataSource.getRepository(Etiqueta);
   const contenidoEtiquetaRepo = AppDataSource.getRepository(ContenidoEtiqueta);
   const playlistRepo = AppDataSource.getRepository(Playlist);
+  const rolRepo = AppDataSource.getRepository(Rol);
 
+
+  // ---------- Roles ----------
+  const rolAdmin = await rolRepo.save(
+    rolRepo.create({ nombre: 'admin', descripcion: 'Acceso total al panel administrativo y gestión de contenido.' }),
+  );
+  const rolUsuario = await rolRepo.save(
+    rolRepo.create({ nombre: 'usuario', descripcion: 'Usuario registrado con acceso a favoritos, comentarios y perfil.' }),
+  );
   // ---------- Décadas ----------
 
   const decada70 = await decadaRepo.save(
@@ -330,6 +340,7 @@ async function seed() {
   );
   console.log('  Contenido: 9 items de ejemplo, distribuidos en las 4 décadas con al menos 2 categorías cada una');
   console.log('  Playlists: 1 por década (4 en total)');
+  console.log(`  Roles: ${rolAdmin.nombre}, ${rolUsuario.nombre}`);
   await AppDataSource.destroy();
 }
 

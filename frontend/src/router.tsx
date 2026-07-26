@@ -7,6 +7,10 @@ import { DecadaPage } from './modules/decadas/DecadaPage'
 import { WarpTunnel } from './shared/components/effects/WarpTunnel'
 import { CategoriaPage } from './modules/categorias/CategoriaPage'
 import { ContenidoDetallePage } from './modules/contenido/ContenidoDetallePage'
+import { LoginPage } from './modules/auth/LoginPage'
+import { RegisterPage } from './modules/auth/RegisterPage'
+import { ProtectedRoute } from './modules/auth/ProtectedRoute'
+import { PerfilPage } from './modules/auth/PerfilPage'
 
 
 const WARP_DURATION = 700
@@ -70,6 +74,16 @@ export const router = createBrowserRouter([
       { path: 'decada/:slug', element: <DecadaPage /> },
       { path: 'decada/:slug/categoria/:categoriaSlug', element: <CategoriaPage /> },
       { path: 'decada/:slug/categoria/:categoriaSlug/:contenidoSlug', element: <ContenidoDetallePage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'registro', element: <RegisterPage /> },
+      {
+        path: 'perfil',
+        element: (
+          <ProtectedRoute>
+            <PerfilPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ])

@@ -8,6 +8,9 @@ import { DecadasModule } from './modules/decadas/decadas.module';
 import { CategoriasModule } from './modules/categorias/categorias.module';
 import { ContenidoModule } from './modules/contenido/contenido.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { UsuariosModule } from './modules/usuarios/usuarios.module';
+import { AuthModule } from './modules/auth/auth.module';
 import databaseConfig from './config/typeorm.config';
 
 @Module({
@@ -26,6 +29,9 @@ import databaseConfig from './config/typeorm.config';
     CategoriasModule,
     ContenidoModule,
     PlaylistsModule,
+    RolesModule,
+    UsuariosModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
