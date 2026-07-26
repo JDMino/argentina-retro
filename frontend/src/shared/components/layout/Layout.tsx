@@ -22,6 +22,9 @@ export function Layout({ children }: LayoutProps) {
                 <Link to="/perfil" className="text-text-secondary">
                   Hola, {usuario.nombre ?? usuario.email}
                 </Link>
+                <Link to="/favoritos" className="text-text-secondary">
+                  Mis favoritos
+                </Link>
                 <button onClick={logout} className="text-accent">
                   Cerrar sesión
                 </button>

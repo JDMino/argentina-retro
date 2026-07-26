@@ -2,6 +2,8 @@ import { useParams } from 'react-router-dom'
 import { useContenido } from './useContenido'
 import { decadaThemeVars } from '../decadas/decadas.theme'
 import { useDecadas } from '../decadas/useDecadas'
+import { FavoritoButton } from '../../shared/components/ui/FavoritoButton'
+import { ComentariosSection } from './ComentariosSection'
 
 export function ContenidoDetallePage() {
   const { contenidoSlug } = useParams<{ contenidoSlug: string }>()
@@ -23,7 +25,10 @@ export function ContenidoDetallePage() {
       style={decada ? decadaThemeVars(decada.paleta) : undefined}
       className="relative -mx-4 px-4"
     >
-      <h1 className="font-heading relative z-10">{contenido.titulo}</h1>
+      <div className="flex flex-wrap items-center gap-4 relative z-10">
+        <h1 className="font-heading">{contenido.titulo}</h1>
+        <FavoritoButton contenidoId={contenido.id} />
+      </div>
       {contenido.anio && <p className="text-text-secondary">{contenido.anio}</p>}
 
       {contenido.descripcion && (
@@ -89,6 +94,8 @@ export function ContenidoDetallePage() {
           ))}
         </div>
       )}
+
+      <ComentariosSection contenidoId={contenido.id} />
     </div>
   )
 }

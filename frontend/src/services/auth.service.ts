@@ -43,3 +43,32 @@ export async function getMe(token: string): Promise<Usuario> {
   })
   return data
 }
+
+export interface UpdatePerfilPayload {
+  nombre?: string
+  email?: string
+}
+
+export interface CambiarPasswordPayload {
+  passwordActual: string
+  passwordNueva: string
+}
+
+export async function actualizarPerfil(
+  token: string,
+  payload: UpdatePerfilPayload,
+): Promise<Usuario> {
+  const { data } = await api.patch<Usuario>('/usuarios/me', payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
+export async function cambiarPassword(
+  token: string,
+  payload: CambiarPasswordPayload,
+): Promise<void> {
+  await api.patch('/usuarios/me/password', payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}

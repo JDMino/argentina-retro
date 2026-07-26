@@ -1,11 +1,14 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { AuthProvider } from './modules/auth/AuthContext'
+import { FavoritosProvider } from './modules/favoritos/FavoritosContext'
 
 function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <FavoritosProvider>
+        <RouterProvider router={router} />
+      </FavoritosProvider>
     </AuthProvider>
   )
 }

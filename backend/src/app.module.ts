@@ -11,6 +11,8 @@ import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { FavoritosModule } from './modules/favoritos/favoritos.module';
+import { ComentariosModule } from './modules/comentarios/comentarios.module';
 import databaseConfig from './config/typeorm.config';
 
 @Module({
@@ -32,6 +34,8 @@ import databaseConfig from './config/typeorm.config';
     RolesModule,
     UsuariosModule,
     AuthModule,
+    FavoritosModule,
+    ComentariosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

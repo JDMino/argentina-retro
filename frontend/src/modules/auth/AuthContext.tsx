@@ -3,19 +3,25 @@ import {
   getMe,
   login as loginRequest,
   register as registerRequest,
+  actualizarPerfil as actualizarPerfilRequest,
+  cambiarPassword as cambiarPasswordRequest,
   type LoginPayload,
   type RegisterPayload,
   type Usuario,
+  type UpdatePerfilPayload,
+  type CambiarPasswordPayload,
 } from '../../services/auth.service'
-
 const TOKEN_STORAGE_KEY = 'argentina-retro:token'
 
 interface AuthContextValue {
   usuario: Usuario | null
+  token: string | null
   loading: boolean
   login: (payload: LoginPayload) => Promise<void>
   register: (payload: RegisterPayload) => Promise<void>
   logout: () => void
+  actualizarPerfil: (payload: UpdatePerfilPayload) => Promise<void>
+  cambiarPassword: (payload: CambiarPasswordPayload) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -44,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
+    
     return () => {
       cancelled = true
     }
@@ -71,8 +78,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(null)
   }
 
+  async function actualizarPerfil(payload: UpdatePerfilPayload) {
+    if (!token) return
+    const actualizado = await actualizarPerfilRequest(token, payload)
+    setUsuario(actualizado)
+  }
+
+  async function cambiarPassword(payload: CambiarPasswordPayload) {
+    if (!token) return
+    await cambiarPasswordRequest(token, payload)
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ usuario, token, loading, login, register, logout, actualizarPerfil, cambiarPassword }}
+    >
       {children}
     </AuthContext.Provider>
   )

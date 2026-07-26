@@ -11,7 +11,7 @@ import { LoginPage } from './modules/auth/LoginPage'
 import { RegisterPage } from './modules/auth/RegisterPage'
 import { ProtectedRoute } from './modules/auth/ProtectedRoute'
 import { PerfilPage } from './modules/auth/PerfilPage'
-
+import { MisFavoritosPage } from './modules/favoritos/MisFavoritosPage'
 
 const WARP_DURATION = 700
 
@@ -81,6 +81,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PerfilPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'favoritos',
+        element: (
+          <ProtectedRoute>
+            <MisFavoritosPage />
           </ProtectedRoute>
         ),
       },
