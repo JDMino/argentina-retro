@@ -87,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function cambiarPassword(payload: CambiarPasswordPayload) {
     if (!token) return
     await cambiarPasswordRequest(token, payload)
+    setUsuario((prev) => (prev ? { ...prev, debeCambiarPassword: false } : prev))
   }
 
   return (

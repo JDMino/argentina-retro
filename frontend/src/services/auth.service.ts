@@ -9,6 +9,7 @@ export interface Usuario {
   email: string
   nombre: string | null
   roles: string[]
+  debeCambiarPassword: boolean
 }
 
 export interface AuthResponse {

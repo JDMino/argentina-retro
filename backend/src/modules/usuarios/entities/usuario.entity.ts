@@ -17,6 +17,9 @@ export class Usuario extends BaseEntity {
   @Column({ default: true })
   activo: boolean;
 
+  @Column({ name: 'debe_cambiar_password', default: false })
+  debeCambiarPassword: boolean;
+
   @ManyToMany(() => Rol, (rol) => rol.usuarios)
   @JoinTable({
     name: 'usuario_roles',

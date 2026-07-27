@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service';
@@ -36,13 +36,17 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const usuario = await this.usuariosService.findByEmail(dto.email);
-    if (!usuario || !usuario.activo) {
+    if (!usuario) {
       throw new UnauthorizedException('Credenciales inválidas.');
     }
 
     const passwordValida = await bcrypt.compare(dto.password, usuario.passwordHash);
     if (!passwordValida) {
       throw new UnauthorizedException('Credenciales inválidas.');
+    }
+
+    if (!usuario.activo) {
+      throw new ForbiddenException('Tu cuenta está suspendida. Contactate con soporte para más información.');
     }
 
     return this.buildAuthResponse(usuario);
@@ -59,6 +63,7 @@ export class AuthService {
         email: usuario.email,
         nombre: usuario.nombre,
         roles,
+        debeCambiarPassword: usuario.debeCambiarPassword,
       },
     };
   }

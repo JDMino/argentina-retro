@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { createBrowserRouter, useLocation, useOutlet } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, useLocation, useOutlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layout } from './shared/components/layout/Layout'
 import { HomePage } from './modules/home/HomePage'
@@ -12,6 +12,8 @@ import { RegisterPage } from './modules/auth/RegisterPage'
 import { ProtectedRoute } from './modules/auth/ProtectedRoute'
 import { AdminRoute } from './modules/auth/AdminRoute'
 import { PerfilPage } from './modules/auth/PerfilPage'
+import { CambiarPasswordObligatorioPage } from './modules/auth/CambiarPasswordObligatorioPage'
+import { useAuth } from './modules/auth/AuthContext'
 import { MisFavoritosPage } from './modules/favoritos/MisFavoritosPage'
 import { AdminLayout } from './modules/admin/AdminLayout'
 import { AdminHomePage } from './modules/admin/AdminHomePage'
@@ -24,6 +26,8 @@ import { ContenidoFormPage } from './modules/admin/contenido/ContenidoFormPage'
 import { AdminPlaylistsPage } from './modules/admin/playlists/AdminPlaylistsPage'
 import { PlaylistFormPage } from './modules/admin/playlists/PlaylistFormPage'
 import { AdminComentariosPage } from './modules/admin/comentarios/AdminComentariosPage'
+import { AdminUsuariosPage } from './modules/admin/usuarios/AdminUsuariosPage'
+import { UsuarioFormPage } from './modules/admin/usuarios/UsuarioFormPage'
 
 const WARP_DURATION = 700
 
@@ -49,6 +53,17 @@ function useWarpActive(pathname: string, duration = 550) {
   }, [pathname, duration])
 
   return active
+}
+
+function AppGate() {
+  const { usuario } = useAuth()
+  const location = useLocation()
+
+  if (usuario?.debeCambiarPassword && location.pathname !== '/cambiar-password') {
+    return <Navigate to="/cambiar-password" replace />
+  }
+
+  return <Outlet />
 }
 
 function RootLayout() {
@@ -79,55 +94,63 @@ function RootLayout() {
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <RootLayout />,
+    element: <AppGate />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'decada/:slug', element: <DecadaPage /> },
-      { path: 'decada/:slug/categoria/:categoriaSlug', element: <CategoriaPage /> },
-      { path: 'decada/:slug/categoria/:categoriaSlug/:contenidoSlug', element: <ContenidoDetallePage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'registro', element: <RegisterPage /> },
+      { path: 'cambiar-password', element: <CambiarPasswordObligatorioPage /> },
       {
-        path: 'perfil',
-        element: (
-          <ProtectedRoute>
-            <PerfilPage />
-          </ProtectedRoute>
-        ),
+        path: '/',
+        element: <RootLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'decada/:slug', element: <DecadaPage /> },
+          { path: 'decada/:slug/categoria/:categoriaSlug', element: <CategoriaPage /> },
+          { path: 'decada/:slug/categoria/:categoriaSlug/:contenidoSlug', element: <ContenidoDetallePage /> },
+          { path: 'login', element: <LoginPage /> },
+          { path: 'registro', element: <RegisterPage /> },
+          {
+            path: 'perfil',
+            element: (
+              <ProtectedRoute>
+                <PerfilPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'favoritos',
+            element: (
+              <ProtectedRoute>
+                <MisFavoritosPage />
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
       {
-        path: 'favoritos',
+        path: 'admin',
         element: (
-          <ProtectedRoute>
-            <MisFavoritosPage />
-          </ProtectedRoute>
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
         ),
+        children: [
+          { index: true, element: <AdminHomePage /> },
+          { path: 'decadas', element: <AdminDecadasPage /> },
+          { path: 'decadas/nueva', element: <DecadaFormPage /> },
+          { path: 'decadas/:id/editar', element: <DecadaFormPage /> },
+          { path: 'categorias', element: <AdminCategoriasPage /> },
+          { path: 'categorias/nueva', element: <CategoriaFormPage /> },
+          { path: 'categorias/:id/editar', element: <CategoriaFormPage /> },
+          { path: 'contenido', element: <AdminContenidoPage /> },
+          { path: 'contenido/nuevo', element: <ContenidoFormPage /> },
+          { path: 'contenido/:id/editar', element: <ContenidoFormPage /> },
+          { path: 'playlists', element: <AdminPlaylistsPage /> },
+          { path: 'playlists/nueva', element: <PlaylistFormPage /> },
+          { path: 'playlists/:id/editar', element: <PlaylistFormPage /> },
+          { path: 'comentarios', element: <AdminComentariosPage /> },
+          { path: 'usuarios', element: <AdminUsuariosPage /> },
+          { path: 'usuarios/:id/editar', element: <UsuarioFormPage /> },
+        ],
       },
-    ],
-  },
-  {
-    path: 'admin',
-    element: (
-      <AdminRoute>
-        <AdminLayout />
-      </AdminRoute>
-    ),
-    children: [
-      { index: true, element: <AdminHomePage /> },
-      { path: 'decadas', element: <AdminDecadasPage /> },
-      { path: 'decadas/nueva', element: <DecadaFormPage /> },
-      { path: 'decadas/:id/editar', element: <DecadaFormPage /> },
-      { path: 'categorias', element: <AdminCategoriasPage /> },
-      { path: 'categorias/nueva', element: <CategoriaFormPage /> },
-      { path: 'categorias/:id/editar', element: <CategoriaFormPage /> },
-      { path: 'contenido', element: <AdminContenidoPage /> },
-      { path: 'contenido/nuevo', element: <ContenidoFormPage /> },
-      { path: 'contenido/:id/editar', element: <ContenidoFormPage /> },
-      { path: 'playlists', element: <AdminPlaylistsPage /> },
-      { path: 'playlists/nueva', element: <PlaylistFormPage /> },
-      { path: 'playlists/:id/editar', element: <PlaylistFormPage /> },
-      { path: 'comentarios', element: <AdminComentariosPage /> },
     ],
   },
 ])

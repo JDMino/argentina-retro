@@ -36,6 +36,7 @@ export class AuthController {
       email: usuario.email,
       nombre: usuario.nombre,
       roles: usuario.roles.map((rol) => rol.nombre),
+      debeCambiarPassword: usuario.debeCambiarPassword,
     };
   }
 }
