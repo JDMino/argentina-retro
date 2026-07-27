@@ -25,6 +25,11 @@ export function Layout({ children }: LayoutProps) {
                 <Link to="/favoritos" className="text-text-secondary">
                   Mis favoritos
                 </Link>
+                {usuario.roles.includes('admin') && (
+                  <Link to="/admin" className="text-text-secondary">
+                    Panel admin
+                  </Link>
+                )}
                 <button onClick={logout} className="text-accent">
                   Cerrar sesión
                 </button>

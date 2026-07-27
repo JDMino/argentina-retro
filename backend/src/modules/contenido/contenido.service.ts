@@ -94,7 +94,7 @@ export class ContenidoService {
       where: { slug },
       relations: RELACIONES_DEFAULT,
     });
-    if (!contenido) {
+    if (!contenido || !contenido.publicado) {
       throw new NotFoundException(`Contenido con slug "${slug}" no encontrado`);
     }
     return contenido;

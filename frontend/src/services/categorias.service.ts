@@ -20,3 +20,44 @@ export async function getCategoriasPorDecada(decadaId: string): Promise<Categori
   })
   return data
 }
+
+export async function getCategorias(): Promise<Categoria[]> {
+  const { data } = await api.get<Categoria[]>('/categorias')
+  return data
+}
+
+export interface CategoriaInput {
+  nombre: string
+  slug: string
+  icono?: string
+  descripcion?: string
+  orden?: number
+  activa?: boolean
+}
+
+function authHeader(token: string) {
+  return { headers: { Authorization: `Bearer ${token}` } }
+}
+
+export async function getCategoria(id: string): Promise<Categoria> {
+  const { data } = await api.get<Categoria>(`/categorias/${id}`)
+  return data
+}
+
+export async function createCategoria(token: string, dto: CategoriaInput): Promise<Categoria> {
+  const { data } = await api.post<Categoria>('/categorias', dto, authHeader(token))
+  return data
+}
+
+export async function updateCategoria(
+  token: string,
+  id: string,
+  dto: Partial<CategoriaInput>,
+): Promise<Categoria> {
+  const { data } = await api.patch<Categoria>(`/categorias/${id}`, dto, authHeader(token))
+  return data
+}
+
+export async function deleteCategoria(token: string, id: string): Promise<void> {
+  await api.delete(`/categorias/${id}`, authHeader(token))
+}

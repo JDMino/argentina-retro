@@ -1,14 +1,10 @@
 import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsUUID, IsInt, Min, IsBoolean } from 'class-validator';
 
-export class FindContenidoQueryDto {
+export class FindComentariosAdminQueryDto {
   @IsOptional()
   @IsUUID()
-  decadaId?: string;
-
-  @IsOptional()
-  @IsUUID()
-  categoriaId?: string;
+  contenidoId?: string;
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -17,7 +13,7 @@ export class FindContenidoQueryDto {
     return value;
   })
   @IsBoolean()
-  publicado?: boolean;
+  aprobado?: boolean;
 
   @IsOptional()
   @Type(() => Number)

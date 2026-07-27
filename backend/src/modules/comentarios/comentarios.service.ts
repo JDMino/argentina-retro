@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { Comentario } from './entities/comentario.entity';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { UpdateComentarioDto } from './dto/update-comentario.dto';
+import { FindComentariosAdminQueryDto } from './dto/find-comentarios-admin-query.dto';
+import { ModerarComentarioDto } from './dto/moderar-comentario.dto';
 
 interface UsuarioActual {
   id: string;
@@ -61,6 +63,42 @@ export class ComentariosService {
     const comentario = await this.findOneOrFail(id);
     this.verificarPermiso(comentario, usuarioActual);
     await this.comentariosRepository.remove(comentario);
+  }
+
+  async findAllAdmin(query: FindComentariosAdminQueryDto) {
+    const where: Record<string, unknown> = {};
+    if (query.contenidoId) where.contenidoId = query.contenidoId;
+    if (query.aprobado !== undefined) where.aprobado = query.aprobado;
+
+    const pagina = query.pagina ?? 1;
+    const limite = query.limite ?? 20;
+
+    const [items, total] = await this.comentariosRepository.findAndCount({
+      where,
+      relations: { usuario: true, contenido: true },
+      select: {
+        id: true,
+        texto: true,
+        aprobado: true,
+        createdAt: true,
+        updatedAt: true,
+        usuarioId: true,
+        contenidoId: true,
+        usuario: { id: true, nombre: true, email: true },
+        contenido: { id: true, titulo: true, slug: true },
+      },
+      order: { createdAt: 'DESC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+
+    return { items, total, pagina, limite };
+  }
+
+  async moderar(id: string, dto: ModerarComentarioDto): Promise<Comentario> {
+    const comentario = await this.findOneOrFail(id);
+    comentario.aprobado = dto.aprobado;
+    return this.comentariosRepository.save(comentario);
   }
 
   private async findOneOrFail(id: string): Promise<Comentario> {

@@ -10,17 +10,23 @@ import {
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { ContenidoService } from './contenido.service';
 import { CreateContenidoDto } from './dto/create-contenido.dto';
 import { UpdateContenidoDto } from './dto/update-contenido.dto';
 import { FindContenidoQueryDto } from './dto/find-contenido-query.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('contenido')
 export class ContenidoController {
   constructor(private readonly contenidoService: ContenidoService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   create(@Body() dto: CreateContenidoDto) {
     return this.contenidoService.create(dto);
   }
@@ -41,11 +47,15 @@ export class ContenidoController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateContenidoDto) {
     return this.contenidoService.update(id, dto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.contenidoService.remove(id);

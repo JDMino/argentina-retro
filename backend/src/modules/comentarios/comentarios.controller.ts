@@ -16,7 +16,11 @@ import { ComentariosService } from './comentarios.service';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { UpdateComentarioDto } from './dto/update-comentario.dto';
 import { FindComentariosQueryDto } from './dto/find-comentarios-query.dto';
+import { FindComentariosAdminQueryDto } from './dto/find-comentarios-admin-query.dto';
+import { ModerarComentarioDto } from './dto/moderar-comentario.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('comentarios')
@@ -26,6 +30,23 @@ export class ComentariosController {
   @Get()
   findAllByContenido(@Query() query: FindComentariosQueryDto) {
     return this.comentariosService.findAllByContenido(query.contenidoId);
+  }
+
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  findAllAdmin(@Query() query: FindComentariosAdminQueryDto) {
+    return this.comentariosService.findAllAdmin(query);
+  }
+
+  @Patch(':id/moderacion')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  moderar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ModerarComentarioDto,
+  ) {
+    return this.comentariosService.moderar(id, dto);
   }
 
   @Post()

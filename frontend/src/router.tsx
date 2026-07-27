@@ -10,8 +10,20 @@ import { ContenidoDetallePage } from './modules/contenido/ContenidoDetallePage'
 import { LoginPage } from './modules/auth/LoginPage'
 import { RegisterPage } from './modules/auth/RegisterPage'
 import { ProtectedRoute } from './modules/auth/ProtectedRoute'
+import { AdminRoute } from './modules/auth/AdminRoute'
 import { PerfilPage } from './modules/auth/PerfilPage'
 import { MisFavoritosPage } from './modules/favoritos/MisFavoritosPage'
+import { AdminLayout } from './modules/admin/AdminLayout'
+import { AdminHomePage } from './modules/admin/AdminHomePage'
+import { AdminDecadasPage } from './modules/admin/decadas/AdminDecadasPage'
+import { DecadaFormPage } from './modules/admin/decadas/DecadaFormPage'
+import { AdminCategoriasPage } from './modules/admin/categorias/AdminCategoriasPage'
+import { CategoriaFormPage } from './modules/admin/categorias/CategoriaFormPage'
+import { AdminContenidoPage } from './modules/admin/contenido/AdminContenidoPage'
+import { ContenidoFormPage } from './modules/admin/contenido/ContenidoFormPage'
+import { AdminPlaylistsPage } from './modules/admin/playlists/AdminPlaylistsPage'
+import { PlaylistFormPage } from './modules/admin/playlists/PlaylistFormPage'
+import { AdminComentariosPage } from './modules/admin/comentarios/AdminComentariosPage'
 
 const WARP_DURATION = 700
 
@@ -92,6 +104,30 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+    ],
+  },
+  {
+    path: 'admin',
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      { index: true, element: <AdminHomePage /> },
+      { path: 'decadas', element: <AdminDecadasPage /> },
+      { path: 'decadas/nueva', element: <DecadaFormPage /> },
+      { path: 'decadas/:id/editar', element: <DecadaFormPage /> },
+      { path: 'categorias', element: <AdminCategoriasPage /> },
+      { path: 'categorias/nueva', element: <CategoriaFormPage /> },
+      { path: 'categorias/:id/editar', element: <CategoriaFormPage /> },
+      { path: 'contenido', element: <AdminContenidoPage /> },
+      { path: 'contenido/nuevo', element: <ContenidoFormPage /> },
+      { path: 'contenido/:id/editar', element: <ContenidoFormPage /> },
+      { path: 'playlists', element: <AdminPlaylistsPage /> },
+      { path: 'playlists/nueva', element: <PlaylistFormPage /> },
+      { path: 'playlists/:id/editar', element: <PlaylistFormPage /> },
+      { path: 'comentarios', element: <AdminComentariosPage /> },
     ],
   },
 ])

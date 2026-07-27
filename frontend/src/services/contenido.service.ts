@@ -43,6 +43,8 @@ export interface Contenido {
   publicado: boolean
   decadaId: string
   categoriaId: string
+  decada?: { id: string; nombre: string; slug: string }
+  categoria?: { id: string; nombre: string; slug: string }
   imagenes: Imagen[]
   videos: Video[]
   contenidoEtiquetas: ContenidoEtiqueta[]
@@ -60,7 +62,7 @@ export async function getContenidoPorCategoria(
   categoriaId: string,
 ): Promise<Contenido[]> {
   const { data } = await api.get<ContenidoListResponse>('/contenido', {
-    params: { decadaId, categoriaId, limite: 100 },
+    params: { decadaId, categoriaId, publicado: true, limite: 100 },
   })
   return data.items
 }
@@ -68,4 +70,64 @@ export async function getContenidoPorCategoria(
 export async function getContenidoPorSlug(slug: string): Promise<Contenido> {
   const { data } = await api.get<Contenido>(`/contenido/slug/${slug}`)
   return data
+}
+
+export async function getContenidoAdmin(pagina = 1, limite = 20): Promise<ContenidoListResponse> {
+  const { data } = await api.get<ContenidoListResponse>('/contenido', {
+    params: { pagina, limite },
+  })
+  return data
+}
+
+export async function getContenidoPorId(id: string): Promise<Contenido> {
+  const { data } = await api.get<Contenido>(`/contenido/${id}`)
+  return data
+}
+
+export interface ImagenInput {
+  url: string
+  textoAlternativo?: string
+  orden?: number
+}
+
+export interface VideoInput {
+  youtubeVideoId: string
+  titulo?: string
+  orden?: number
+}
+
+export interface ContenidoInput {
+  titulo: string
+  slug: string
+  descripcion?: string
+  anio?: number
+  decadaId: string
+  categoriaId: string
+  enlacesExternos?: EnlaceExterno[]
+  publicado?: boolean
+  imagenes?: ImagenInput[]
+  videos?: VideoInput[]
+  etiquetaIds?: string[]
+}
+
+function authHeader(token: string) {
+  return { headers: { Authorization: `Bearer ${token}` } }
+}
+
+export async function createContenido(token: string, dto: ContenidoInput): Promise<Contenido> {
+  const { data } = await api.post<Contenido>('/contenido', dto, authHeader(token))
+  return data
+}
+
+export async function updateContenido(
+  token: string,
+  id: string,
+  dto: Partial<ContenidoInput>,
+): Promise<Contenido> {
+  const { data } = await api.patch<Contenido>(`/contenido/${id}`, dto, authHeader(token))
+  return data
+}
+
+export async function deleteContenido(token: string, id: string): Promise<void> {
+  await api.delete(`/contenido/${id}`, authHeader(token))
 }

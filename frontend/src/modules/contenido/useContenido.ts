@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { getContenidoPorSlug, type Contenido } from '../../services/contenido.service'
 
 interface UseContenidoResult {
@@ -23,8 +24,13 @@ export function useContenido(slug: string | undefined): UseContenidoResult {
       .then((data) => {
         if (!cancelled) setContenido(data)
       })
-      .catch(() => {
-        if (!cancelled) setError('No pudimos cargar el contenido.')
+      .catch((err) => {
+        if (cancelled) return
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          setError('Este contenido no está disponible.')
+        } else {
+          setError('No pudimos cargar el contenido.')
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)

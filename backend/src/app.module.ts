@@ -7,6 +7,7 @@ import { HealthModule } from './modules/health/health.module';
 import { DecadasModule } from './modules/decadas/decadas.module';
 import { CategoriasModule } from './modules/categorias/categorias.module';
 import { ContenidoModule } from './modules/contenido/contenido.module';
+import { EtiquetasModule } from './modules/etiquetas/etiquetas.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
@@ -30,6 +31,7 @@ import databaseConfig from './config/typeorm.config';
     DecadasModule,
     CategoriasModule,
     ContenidoModule,
+    EtiquetasModule,
     PlaylistsModule,
     RolesModule,
     UsuariosModule,

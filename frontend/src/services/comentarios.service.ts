@@ -30,6 +30,50 @@ export async function getComentarios(contenidoId: string): Promise<Comentario[]>
   return data
 }
 
+export interface ComentarioAdmin extends Comentario {
+  aprobado: boolean
+  contenidoId: string
+  contenido: { id: string; titulo: string; slug: string }
+}
+
+interface ComentariosAdminResponse {
+  items: ComentarioAdmin[]
+  total: number
+  pagina: number
+  limite: number
+}
+
+export interface ComentariosAdminFiltros {
+  aprobado?: boolean
+  contenidoId?: string
+}
+
+export async function getComentariosAdmin(
+  token: string,
+  pagina = 1,
+  limite = 20,
+  filtros: ComentariosAdminFiltros = {},
+): Promise<ComentariosAdminResponse> {
+  const { data } = await api.get<ComentariosAdminResponse>('/comentarios/admin', {
+    params: { pagina, limite, ...filtros },
+    ...authHeader(token),
+  })
+  return data
+}
+
+export async function moderarComentario(
+  token: string,
+  id: string,
+  aprobado: boolean,
+): Promise<ComentarioAdmin> {
+  const { data } = await api.patch<ComentarioAdmin>(
+    `/comentarios/${id}/moderacion`,
+    { aprobado },
+    authHeader(token),
+  )
+  return data
+}
+
 export async function crearComentario(
   token: string,
   contenidoId: string,
