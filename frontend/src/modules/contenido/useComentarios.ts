@@ -21,17 +21,24 @@ export function useComentarios(contenidoId: string | undefined): UseComentariosR
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const cargar = useCallback(() => {
+  const cargar = useCallback(async () => {
     if (!contenidoId) return
     setLoading(true)
-    getComentarios(contenidoId)
-      .then(setComentarios)
-      .catch(() => setError('No pudimos cargar los comentarios.'))
-      .finally(() => setLoading(false))
+    try {
+      const data = await getComentarios(contenidoId)
+      setComentarios(data)
+    } catch {
+      setError('No pudimos cargar los comentarios.')
+    } finally {
+      setLoading(false)
+    }
   }, [contenidoId])
 
   useEffect(() => {
-    cargar()
+    async function cargarInicial() {
+      await cargar()
+    }
+    cargarInicial()
   }, [cargar])
 
   async function crear(token: string, texto: string) {

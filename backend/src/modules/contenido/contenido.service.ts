@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Contenido } from './entities/contenido.entity';
 import { ContenidoEtiqueta } from './entities/contenido-etiqueta.entity';
 import { Imagen } from '../multimedia/entities/imagen.entity';
@@ -59,21 +59,55 @@ export class ContenidoService {
   }
 
   async findAll(query: FindContenidoQueryDto) {
-    const where: FindOptionsWhere<Contenido> = {};
-    if (query.decadaId) where.decadaId = query.decadaId;
-    if (query.categoriaId) where.categoriaId = query.categoriaId;
-    if (query.publicado !== undefined) where.publicado = query.publicado;
-
     const pagina = query.pagina ?? 1;
     const limite = query.limite ?? 20;
 
-    const [items, total] = await this.contenidoRepository.findAndCount({
-      where,
-      relations: RELACIONES_DEFAULT,
-      order: { createdAt: 'DESC' },
-      skip: (pagina - 1) * limite,
-      take: limite,
-    });
+    // Query builder (no `where` plano) porque el filtro por etiqueta necesita
+    // un join a `contenido_etiquetas` y la búsqueda de texto necesita ILIKE
+    // combinado con el resto de los filtros exactos.
+    const qb = this.contenidoRepository
+      .createQueryBuilder('contenido')
+      .leftJoinAndSelect('contenido.decada', 'decada')
+      .leftJoinAndSelect('contenido.categoria', 'categoria')
+      .leftJoinAndSelect('contenido.imagenes', 'imagenes')
+      .leftJoinAndSelect('contenido.videos', 'videos')
+      .leftJoinAndSelect('contenido.contenidoEtiquetas', 'contenidoEtiquetas')
+      .leftJoinAndSelect('contenidoEtiquetas.etiqueta', 'etiqueta');
+
+    if (query.decadaId) {
+      qb.andWhere('contenido.decadaId = :decadaId', { decadaId: query.decadaId });
+    }
+    if (query.categoriaId) {
+      qb.andWhere('contenido.categoriaId = :categoriaId', { categoriaId: query.categoriaId });
+    }
+    if (query.anio) {
+      qb.andWhere('contenido.anio = :anio', { anio: query.anio });
+    }
+    if (query.publicado !== undefined) {
+      qb.andWhere('contenido.publicado = :publicado', { publicado: query.publicado });
+    }
+    if (query.q) {
+      qb.andWhere('(contenido.titulo ILIKE :q OR contenido.descripcion ILIKE :q)', {
+        q: `%${query.q}%`,
+      });
+    }
+    if (query.etiquetaId) {
+      // Join adicional exclusivo para filtrar (no para traer datos, ya lo trae
+      // el leftJoinAndSelect de arriba); subquery evita que el filtro por
+      // etiqueta reduzca las etiquetas visibles del resto de resultados.
+      qb.andWhere(
+        `contenido.id IN (
+          SELECT ce.contenido_id FROM contenido_etiquetas ce WHERE ce.etiqueta_id = :etiquetaId
+        )`,
+        { etiquetaId: query.etiquetaId },
+      );
+    }
+
+    const [items, total] = await qb
+      .orderBy('contenido.createdAt', 'DESC')
+      .skip((pagina - 1) * limite)
+      .take(limite)
+      .getManyAndCount();
 
     return { items, total, pagina, limite };
   }

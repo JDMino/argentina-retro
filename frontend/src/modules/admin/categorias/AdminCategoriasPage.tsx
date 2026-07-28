@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
+import { SearchInput } from '../../../shared/components/ui/SearchInput'
 import {
   deleteCategoria,
   getCategorias,
@@ -14,22 +15,23 @@ export function AdminCategoriasPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  async function cargar() {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getCategorias()
-      data.sort((a, b) => a.orden - b.orden)
-      setCategorias(data)
-    } catch {
-      setError('No se pudieron cargar las categorías.')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [q, setQ] = useState('')
 
   useEffect(() => {
+    async function cargar() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await getCategorias()
+        data.sort((a, b) => a.orden - b.orden)
+        setCategorias(data)
+      } catch {
+        setError('No se pudieron cargar las categorías.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     cargar()
   }, [])
 
@@ -50,6 +52,15 @@ export function AdminCategoriasPage() {
     }
   }
 
+  const qNormalizado = q.trim().toLowerCase()
+  const categoriasFiltradas = qNormalizado
+    ? categorias.filter(
+        (c) =>
+          c.nombre.toLowerCase().includes(qNormalizado) ||
+          c.slug.toLowerCase().includes(qNormalizado),
+      )
+    : categorias
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -58,6 +69,8 @@ export function AdminCategoriasPage() {
           <Button variant="primary">+ Nueva categoría</Button>
         </Link>
       </div>
+
+      <SearchInput value={q} onChange={setQ} placeholder="Buscar por nombre o slug..." className="w-full max-w-sm" />
 
       {loading && <p className="font-sans text-text-secondary text-sm">Cargando...</p>}
       {error && <p className="font-sans text-red-400 text-sm">{error}</p>}
@@ -76,7 +89,7 @@ export function AdminCategoriasPage() {
               </tr>
             </thead>
             <tbody>
-              {categorias.map((categoria) => (
+              {categoriasFiltradas.map((categoria) => (
                 <tr key={categoria.id} className="border-t border-border">
                   <td className="px-4 py-2 text-text-secondary">{categoria.orden}</td>
                   <td className="px-4 py-2 text-text">{categoria.icono ?? '—'}</td>
@@ -105,10 +118,12 @@ export function AdminCategoriasPage() {
                   </td>
                 </tr>
               ))}
-              {categorias.length === 0 && (
+              {categoriasFiltradas.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-6 text-center text-text-secondary">
-                    Todavía no hay categorías cargadas.
+                    {qNormalizado
+                      ? 'No encontramos categorías con esos criterios.'
+                      : 'Todavía no hay categorías cargadas.'}
                   </td>
                 </tr>
               )}

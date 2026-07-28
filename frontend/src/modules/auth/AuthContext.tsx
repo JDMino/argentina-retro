@@ -32,25 +32,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!token) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
-    getMe(token)
-      .then((data) => {
+
+    async function cargarSesion() {
+      if (!token) {
+        setLoading(false)
+        return
+      }
+      try {
+        const data = await getMe(token)
         if (!cancelled) setUsuario(data)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) {
           localStorage.removeItem(TOKEN_STORAGE_KEY)
           setToken(null)
         }
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
-    
+      }
+    }
+
+    cargarSesion()
+
     return () => {
       cancelled = true
     }

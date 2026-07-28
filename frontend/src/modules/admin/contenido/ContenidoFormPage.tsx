@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { Button } from '../../../shared/components/ui/Button'
+import { SearchInput } from '../../../shared/components/ui/SearchInput'
 import { getDecadas, type Decada } from '../../../services/decadas.service'
 import { getCategorias, type Categoria } from '../../../services/categorias.service'
 import { getEtiquetas, createEtiqueta, type Etiqueta } from '../../../services/etiquetas.service'
@@ -45,6 +46,7 @@ export function ContenidoFormPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [etiquetas, setEtiquetas] = useState<Etiqueta[]>([])
   const [nuevaEtiqueta, setNuevaEtiqueta] = useState('')
+  const [busquedaEtiqueta, setBusquedaEtiqueta] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [guardando, setGuardando] = useState(false)
@@ -430,24 +432,39 @@ export function ContenidoFormPage() {
         {/* Etiquetas */}
         <fieldset className="border border-border rounded-lg p-4 flex flex-col gap-3">
           <legend className={labelClass}>Etiquetas</legend>
+          {etiquetas.length > 8 && (
+            <SearchInput
+              value={busquedaEtiqueta}
+              onChange={setBusquedaEtiqueta}
+              placeholder="Buscar etiqueta..."
+              className="w-full max-w-xs"
+            />
+          )}
           <div className="flex flex-wrap gap-2">
-            {etiquetas.map((etiqueta) => {
-              const activa = form.etiquetaIds?.includes(etiqueta.id)
-              return (
-                <button
-                  key={etiqueta.id}
-                  type="button"
-                  onClick={() => toggleEtiqueta(etiqueta.id)}
-                  className={`px-3 py-1 rounded-full text-xs font-sans border transition-colors duration-150 cursor-pointer ${
-                    activa
-                      ? 'bg-accent text-bg border-accent'
-                      : 'bg-transparent text-text-secondary border-border hover:border-accent'
-                  }`}
-                >
-                  {etiqueta.nombre}
-                </button>
-              )
-            })}
+            {etiquetas
+              .filter((etiqueta) => {
+                const activa = form.etiquetaIds?.includes(etiqueta.id)
+                if (activa) return true // no ocultar selecciones activas al filtrar
+                const q = busquedaEtiqueta.trim().toLowerCase()
+                return !q || etiqueta.nombre.toLowerCase().includes(q)
+              })
+              .map((etiqueta) => {
+                const activa = form.etiquetaIds?.includes(etiqueta.id)
+                return (
+                  <button
+                    key={etiqueta.id}
+                    type="button"
+                    onClick={() => toggleEtiqueta(etiqueta.id)}
+                    className={`px-3 py-1 rounded-full text-xs font-sans border transition-colors duration-150 cursor-pointer ${
+                      activa
+                        ? 'bg-accent text-bg border-accent'
+                        : 'bg-transparent text-text-secondary border-border hover:border-accent'
+                    }`}
+                  >
+                    {etiqueta.nombre}
+                  </button>
+                )
+              })}
             {etiquetas.length === 0 && (
               <p className="font-sans text-text-secondary text-xs">Todavía no hay etiquetas creadas.</p>
             )}

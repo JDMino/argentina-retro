@@ -66,31 +66,31 @@ export class ComentariosService {
   }
 
   async findAllAdmin(query: FindComentariosAdminQueryDto) {
-    const where: Record<string, unknown> = {};
-    if (query.contenidoId) where.contenidoId = query.contenidoId;
-    if (query.aprobado !== undefined) where.aprobado = query.aprobado;
-
     const pagina = query.pagina ?? 1;
     const limite = query.limite ?? 20;
 
-    const [items, total] = await this.comentariosRepository.findAndCount({
-      where,
-      relations: { usuario: true, contenido: true },
-      select: {
-        id: true,
-        texto: true,
-        aprobado: true,
-        createdAt: true,
-        updatedAt: true,
-        usuarioId: true,
-        contenidoId: true,
-        usuario: { id: true, nombre: true, email: true },
-        contenido: { id: true, titulo: true, slug: true },
-      },
-      order: { createdAt: 'DESC' },
-      skip: (pagina - 1) * limite,
-      take: limite,
-    });
+    const qb = this.comentariosRepository
+      .createQueryBuilder('comentario')
+      .leftJoin('comentario.usuario', 'usuario')
+      .addSelect(['usuario.id', 'usuario.nombre', 'usuario.email'])
+      .leftJoin('comentario.contenido', 'contenido')
+      .addSelect(['contenido.id', 'contenido.titulo', 'contenido.slug']);
+
+    if (query.contenidoId) {
+      qb.andWhere('comentario.contenidoId = :contenidoId', { contenidoId: query.contenidoId });
+    }
+    if (query.aprobado !== undefined) {
+      qb.andWhere('comentario.aprobado = :aprobado', { aprobado: query.aprobado });
+    }
+    if (query.q) {
+      qb.andWhere('comentario.texto ILIKE :q', { q: `%${query.q}%` });
+    }
+
+    const [items, total] = await qb
+      .orderBy('comentario.createdAt', 'DESC')
+      .skip((pagina - 1) * limite)
+      .take(limite)
+      .getManyAndCount();
 
     return { items, total, pagina, limite };
   }

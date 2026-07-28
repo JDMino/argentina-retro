@@ -14,26 +14,26 @@ export function AdminPlaylistsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function cargar() {
-    setLoading(true)
-    setError(null)
-    try {
-      const [playlistsData, decadasData, categoriasData] = await Promise.all([
-        getPlaylists(),
-        getDecadas(),
-        getCategorias(),
-      ])
-      setPlaylists(playlistsData)
-      setDecadas(decadasData)
-      setCategorias(categoriasData)
-    } catch {
-      setError('No se pudieron cargar las playlists.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
+    async function cargar() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [playlistsData, decadasData, categoriasData] = await Promise.all([
+          getPlaylists(),
+          getDecadas(),
+          getCategorias(),
+        ])
+        setPlaylists(playlistsData)
+        setDecadas(decadasData)
+        setCategorias(categoriasData)
+      } catch {
+        setError('No se pudieron cargar las playlists.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     cargar()
   }, [])
 

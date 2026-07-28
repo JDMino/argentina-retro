@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsOptional, IsUUID, IsInt, Min, IsBoolean } from 'class-validator';
+import { IsOptional, IsUUID, IsInt, Min, IsBoolean, IsString, MaxLength } from 'class-validator';
 
 export class FindContenidoQueryDto {
   @IsOptional()
@@ -9,6 +9,20 @@ export class FindContenidoQueryDto {
   @IsOptional()
   @IsUUID()
   categoriaId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  etiquetaId?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  anio?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  q?: string;
 
   @IsOptional()
   @Transform(({ value }) => {

@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/admin/categorias', label: 'Categorías' },
   { to: '/admin/contenido', label: 'Contenido' },
   { to: '/admin/playlists', label: 'Playlists' },
+  { to: '/admin/etiquetas', label: 'Etiquetas' },
   { to: '/admin/comentarios', label: 'Comentarios' },
   { to: '/admin/usuarios', label: 'Usuarios' },
 ]

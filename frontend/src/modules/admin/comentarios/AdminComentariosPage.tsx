@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
+import { SearchInput } from '../../../shared/components/ui/SearchInput'
 import {
   borrarComentario,
   getComentariosAdmin,
@@ -11,6 +12,7 @@ import {
 } from '../../../services/comentarios.service'
 
 const LIMITE = 20
+const DEBOUNCE_MS = 400
 
 type Filtro = 'todos' | 'pendientes' | 'aprobados'
 
@@ -20,15 +22,26 @@ export function AdminComentariosPage() {
   const [total, setTotal] = useState(0)
   const [pagina, setPagina] = useState(1)
   const [filtro, setFiltro] = useState<Filtro>('todos')
+  const [q, setQ] = useState('')
+  const [qDebounced, setQDebounced] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function cargar(pag: number, f: Filtro) {
+  useEffect(() => {
+    const timeout = setTimeout(() => setQDebounced(q), DEBOUNCE_MS)
+    return () => clearTimeout(timeout)
+  }, [q])
+
+  async function cargar(pag: number, f: Filtro, texto: string) {
     if (!token) return
     setLoading(true)
     setError(null)
     try {
-      const filtros = f === 'pendientes' ? { aprobado: false } : f === 'aprobados' ? { aprobado: true } : {}
+      const filtros = {
+        ...(f === 'pendientes' && { aprobado: false }),
+        ...(f === 'aprobados' && { aprobado: true }),
+        ...(texto.trim() && { q: texto.trim() }),
+      }
       const data = await getComentariosAdmin(token, pag, LIMITE, filtros)
       setItems(data.items)
       setTotal(data.total)
@@ -41,15 +54,18 @@ export function AdminComentariosPage() {
   }
 
   useEffect(() => {
-    cargar(1, filtro)
+    async function cargarInicial() {
+      await cargar(1, filtro, qDebounced)
+    }
+    cargarInicial()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtro])
+  }, [filtro, qDebounced])
 
   async function handleModerar(comentario: ComentarioAdmin, aprobado: boolean) {
     if (!token) return
     try {
       await moderarComentario(token, comentario.id, aprobado)
-      cargar(pagina, filtro)
+      cargar(pagina, filtro, qDebounced)
     } catch {
       window.alert('No se pudo actualizar el comentario.')
     }
@@ -62,7 +78,7 @@ export function AdminComentariosPage() {
 
     try {
       await borrarComentario(token, comentario.id)
-      cargar(pagina, filtro)
+      cargar(pagina, filtro, qDebounced)
     } catch {
       window.alert('No se pudo eliminar el comentario.')
     }
@@ -81,7 +97,7 @@ export function AdminComentariosPage() {
     <div className="flex flex-col gap-4">
       <h1 className="font-sans font-semibold text-2xl text-text">Comentarios</h1>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button className={filtroClass('todos')} onClick={() => setFiltro('todos')}>
           Todos
         </button>
@@ -91,6 +107,7 @@ export function AdminComentariosPage() {
         <button className={filtroClass('aprobados')} onClick={() => setFiltro('aprobados')}>
           Aprobados
         </button>
+        <SearchInput value={q} onChange={setQ} placeholder="Buscar en el texto..." className="flex-1 min-w-[180px]" />
       </div>
 
       {loading && <p className="font-sans text-text-secondary text-sm">Cargando...</p>}
@@ -167,7 +184,7 @@ export function AdminComentariosPage() {
                 variant="ghost"
                 className="px-3 py-1 text-xs"
                 disabled={pagina <= 1}
-                onClick={() => cargar(pagina - 1, filtro)}
+                onClick={() => cargar(pagina - 1, filtro, qDebounced)}
               >
                 ← Anterior
               </Button>
@@ -178,7 +195,7 @@ export function AdminComentariosPage() {
                 variant="ghost"
                 className="px-3 py-1 text-xs"
                 disabled={pagina >= totalPaginas}
-                onClick={() => cargar(pagina + 1, filtro)}
+                onClick={() => cargar(pagina + 1, filtro, qDebounced)}
               >
                 Siguiente →
               </Button>

@@ -13,22 +13,26 @@ export function useCategorias(decadaId: string | undefined): UseCategoriasResult
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!decadaId) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
-    setLoading(true)
-    getCategoriasPorDecada(decadaId)
-      .then((data) => {
+
+    async function cargar() {
+      if (!decadaId) {
+        setLoading(false)
+        return
+      }
+      setLoading(true)
+      try {
+        const data = await getCategoriasPorDecada(decadaId)
         if (!cancelled) setCategorias(data)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setError('No pudimos cargar las categorías.')
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    cargar()
+
     return () => {
       cancelled = true
     }

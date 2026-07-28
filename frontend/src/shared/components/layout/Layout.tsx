@@ -17,6 +17,23 @@ export function Layout({ children }: LayoutProps) {
             Argentina <span className="text-accent">Retro</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm">
+            <Link to="/buscar" aria-label="Buscar" className="text-text-secondary">
+              <span className="md:hidden" aria-hidden="true">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <span className="hidden md:inline">Buscar</span>
+            </Link>
             {loading ? null : usuario ? (
               <>
                 <Link to="/perfil" className="text-text-secondary">

@@ -7,6 +7,7 @@ import { DecadaPage } from './modules/decadas/DecadaPage'
 import { WarpTunnel } from './shared/components/effects/WarpTunnel'
 import { CategoriaPage } from './modules/categorias/CategoriaPage'
 import { ContenidoDetallePage } from './modules/contenido/ContenidoDetallePage'
+import { BuscadorPage } from './modules/contenido/BuscadorPage'
 import { LoginPage } from './modules/auth/LoginPage'
 import { RegisterPage } from './modules/auth/RegisterPage'
 import { ProtectedRoute } from './modules/auth/ProtectedRoute'
@@ -26,6 +27,7 @@ import { ContenidoFormPage } from './modules/admin/contenido/ContenidoFormPage'
 import { AdminPlaylistsPage } from './modules/admin/playlists/AdminPlaylistsPage'
 import { PlaylistFormPage } from './modules/admin/playlists/PlaylistFormPage'
 import { AdminComentariosPage } from './modules/admin/comentarios/AdminComentariosPage'
+import { AdminEtiquetasPage } from './modules/admin/etiquetas/AdminEtiquetasPage'
 import { AdminUsuariosPage } from './modules/admin/usuarios/AdminUsuariosPage'
 import { UsuarioFormPage } from './modules/admin/usuarios/UsuarioFormPage'
 
@@ -105,6 +107,7 @@ export const router = createBrowserRouter([
           { path: 'decada/:slug', element: <DecadaPage /> },
           { path: 'decada/:slug/categoria/:categoriaSlug', element: <CategoriaPage /> },
           { path: 'decada/:slug/categoria/:categoriaSlug/:contenidoSlug', element: <ContenidoDetallePage /> },
+          { path: 'buscar', element: <BuscadorPage /> },
           { path: 'login', element: <LoginPage /> },
           { path: 'registro', element: <RegisterPage /> },
           {
@@ -146,6 +149,7 @@ export const router = createBrowserRouter([
           { path: 'playlists', element: <AdminPlaylistsPage /> },
           { path: 'playlists/nueva', element: <PlaylistFormPage /> },
           { path: 'playlists/:id/editar', element: <PlaylistFormPage /> },
+          { path: 'etiquetas', element: <AdminEtiquetasPage /> },
           { path: 'comentarios', element: <AdminComentariosPage /> },
           { path: 'usuarios', element: <AdminUsuariosPage /> },
           { path: 'usuarios/:id/editar', element: <UsuarioFormPage /> },

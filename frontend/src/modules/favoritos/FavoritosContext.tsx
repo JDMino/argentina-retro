@@ -22,22 +22,26 @@ export function FavoritosProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!usuario || !token) {
-      setFavoritos([])
-      return
-    }
     let cancelled = false
-    setLoading(true)
-    getFavoritos(token)
-      .then((data) => {
+
+    async function cargar() {
+      if (!usuario || !token) {
+        setFavoritos([])
+        return
+      }
+      setLoading(true)
+      try {
+        const data = await getFavoritos(token)
         if (!cancelled) setFavoritos(data)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setFavoritos([])
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    cargar()
+
     return () => {
       cancelled = true
     }

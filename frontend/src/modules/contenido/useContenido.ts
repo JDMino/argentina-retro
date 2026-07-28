@@ -14,27 +14,31 @@ export function useContenido(slug: string | undefined): UseContenidoResult {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!slug) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
-    setLoading(true)
-    getContenidoPorSlug(slug)
-      .then((data) => {
+
+    async function cargar() {
+      if (!slug) {
+        setLoading(false)
+        return
+      }
+      setLoading(true)
+      try {
+        const data = await getContenidoPorSlug(slug)
         if (!cancelled) setContenido(data)
-      })
-      .catch((err) => {
+      } catch (err) {
         if (cancelled) return
         if (axios.isAxiosError(err) && err.response?.status === 404) {
           setError('Este contenido no está disponible.')
         } else {
           setError('No pudimos cargar el contenido.')
         }
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    cargar()
+
     return () => {
       cancelled = true
     }

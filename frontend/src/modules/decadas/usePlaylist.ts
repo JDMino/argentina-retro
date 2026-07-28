@@ -13,22 +13,26 @@ export function usePlaylist(decadaId: string | undefined): UsePlaylistResult {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!decadaId) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
-    setLoading(true)
-    getPlaylistPorDecada(decadaId)
-      .then((data) => {
+
+    async function cargar() {
+      if (!decadaId) {
+        setLoading(false)
+        return
+      }
+      setLoading(true)
+      try {
+        const data = await getPlaylistPorDecada(decadaId)
         if (!cancelled) setPlaylist(data[0] ?? null)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setError('No pudimos cargar la playlist.')
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    cargar()
+
     return () => {
       cancelled = true
     }

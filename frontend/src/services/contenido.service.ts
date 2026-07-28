@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { DecadaPaleta } from './decadas.service'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -43,14 +44,14 @@ export interface Contenido {
   publicado: boolean
   decadaId: string
   categoriaId: string
-  decada?: { id: string; nombre: string; slug: string }
+  decada?: { id: string; nombre: string; slug: string; paleta: DecadaPaleta }
   categoria?: { id: string; nombre: string; slug: string }
   imagenes: Imagen[]
   videos: Video[]
   contenidoEtiquetas: ContenidoEtiqueta[]
 }
 
-interface ContenidoListResponse {
+export interface ContenidoListResponse {
   items: Contenido[]
   total: number
   pagina: number
@@ -67,14 +68,44 @@ export async function getContenidoPorCategoria(
   return data.items
 }
 
+export interface BuscarContenidoFiltros {
+  q?: string
+  decadaId?: string
+  categoriaId?: string
+  etiquetaId?: string
+  anio?: number
+  pagina?: number
+  limite?: number
+}
+
+export async function buscarContenido(
+  filtros: BuscarContenidoFiltros,
+): Promise<ContenidoListResponse> {
+  const { data } = await api.get<ContenidoListResponse>('/contenido', {
+    params: { ...filtros, publicado: true },
+  })
+  return data
+}
+
 export async function getContenidoPorSlug(slug: string): Promise<Contenido> {
   const { data } = await api.get<Contenido>(`/contenido/slug/${slug}`)
   return data
 }
 
-export async function getContenidoAdmin(pagina = 1, limite = 20): Promise<ContenidoListResponse> {
+export interface ContenidoAdminFiltros {
+  q?: string
+  decadaId?: string
+  categoriaId?: string
+  anio?: number
+}
+
+export async function getContenidoAdmin(
+  pagina = 1,
+  limite = 20,
+  filtros: ContenidoAdminFiltros = {},
+): Promise<ContenidoListResponse> {
   const { data } = await api.get<ContenidoListResponse>('/contenido', {
-    params: { pagina, limite },
+    params: { pagina, limite, ...filtros },
   })
   return data
 }

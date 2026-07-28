@@ -1,10 +1,15 @@
 import { Transform, Type } from 'class-transformer';
-import { IsOptional, IsUUID, IsInt, Min, IsBoolean } from 'class-validator';
+import { IsOptional, IsUUID, IsInt, Min, IsBoolean, IsString, MaxLength } from 'class-validator';
 
 export class FindComentariosAdminQueryDto {
   @IsOptional()
   @IsUUID()
   contenidoId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  q?: string;
 
   @IsOptional()
   @Transform(({ value }) => {

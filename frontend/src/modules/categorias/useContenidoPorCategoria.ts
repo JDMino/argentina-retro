@@ -16,22 +16,26 @@ export function useContenidoPorCategoria(
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!decadaId || !categoriaId) {
-      setLoading(false)
-      return
-    }
     let cancelled = false
-    setLoading(true)
-    getContenidoPorCategoria(decadaId, categoriaId)
-      .then((data) => {
+
+    async function cargar() {
+      if (!decadaId || !categoriaId) {
+        setLoading(false)
+        return
+      }
+      setLoading(true)
+      try {
+        const data = await getContenidoPorCategoria(decadaId, categoriaId)
         if (!cancelled) setContenidos(data)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setError('No pudimos cargar el contenido.')
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    cargar()
+
     return () => {
       cancelled = true
     }

@@ -11,21 +11,21 @@ export function AdminDecadasPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function cargar() {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getDecadas()
-      data.sort((a, b) => a.orden - b.orden)
-      setDecadas(data)
-    } catch {
-      setError('No se pudieron cargar las décadas.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
+    async function cargar() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await getDecadas()
+        data.sort((a, b) => a.orden - b.orden)
+        setDecadas(data)
+      } catch {
+        setError('No se pudieron cargar las décadas.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     cargar()
   }, [])
 

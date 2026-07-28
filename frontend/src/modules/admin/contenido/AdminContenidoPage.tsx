@@ -3,13 +3,18 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
+import { SearchInput } from '../../../shared/components/ui/SearchInput'
 import {
   deleteContenido,
   getContenidoAdmin,
   type Contenido,
+  type ContenidoAdminFiltros,
 } from '../../../services/contenido.service'
+import { getDecadas, type Decada } from '../../../services/decadas.service'
+import { getCategorias, type Categoria } from '../../../services/categorias.service'
 
 const LIMITE = 20
+const DEBOUNCE_MS = 400
 
 export function AdminContenidoPage() {
   const { token } = useAuth()
@@ -19,11 +24,35 @@ export function AdminContenidoPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function cargar(pag: number) {
+  const [decadas, setDecadas] = useState<Decada[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
+
+  const [q, setQ] = useState('')
+  const [qDebounced, setQDebounced] = useState('')
+  const [decadaId, setDecadaId] = useState('')
+  const [categoriaId, setCategoriaId] = useState('')
+
+  useEffect(() => {
+    getDecadas().then(setDecadas).catch(() => {})
+    getCategorias().then(setCategorias).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setQDebounced(q), DEBOUNCE_MS)
+    return () => clearTimeout(timeout)
+  }, [q])
+
+  const filtros: ContenidoAdminFiltros = {
+    ...(qDebounced.trim() && { q: qDebounced.trim() }),
+    ...(decadaId && { decadaId }),
+    ...(categoriaId && { categoriaId }),
+  }
+
+  async function cargar(pag: number, filtrosActuales: ContenidoAdminFiltros) {
     setLoading(true)
     setError(null)
     try {
-      const data = await getContenidoAdmin(pag, LIMITE)
+      const data = await getContenidoAdmin(pag, LIMITE, filtrosActuales)
       setItems(data.items)
       setTotal(data.total)
       setPagina(data.pagina)
@@ -35,8 +64,12 @@ export function AdminContenidoPage() {
   }
 
   useEffect(() => {
-    cargar(1)
-  }, [])
+    async function cargarInicial() {
+      await cargar(1, filtros)
+    }
+    cargarInicial()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qDebounced, decadaId, categoriaId])
 
   async function handleEliminar(contenido: Contenido) {
     if (!token) return
@@ -47,13 +80,14 @@ export function AdminContenidoPage() {
 
     try {
       await deleteContenido(token, contenido.id)
-      cargar(pagina)
+      cargar(pagina, filtros)
     } catch {
       window.alert('No se pudo eliminar el contenido.')
     }
   }
 
   const totalPaginas = Math.max(1, Math.ceil(total / LIMITE))
+  const hayFiltrosActivos = q !== '' || decadaId !== '' || categoriaId !== ''
 
   return (
     <div className="flex flex-col gap-4">
@@ -62,6 +96,46 @@ export function AdminContenidoPage() {
         <Link to="/admin/contenido/nuevo">
           <Button variant="primary">+ Nuevo contenido</Button>
         </Link>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput value={q} onChange={setQ} placeholder="Buscar por título o descripción..." className="flex-1 min-w-[200px]" />
+        <select
+          value={decadaId}
+          onChange={(e) => setDecadaId(e.target.value)}
+          className="bg-bg-secondary border border-border rounded-md px-2 py-1.5 text-sm text-text"
+        >
+          <option value="">Todas las décadas</option>
+          {decadas.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.nombre}
+            </option>
+          ))}
+        </select>
+        <select
+          value={categoriaId}
+          onChange={(e) => setCategoriaId(e.target.value)}
+          className="bg-bg-secondary border border-border rounded-md px-2 py-1.5 text-sm text-text"
+        >
+          <option value="">Todas las categorías</option>
+          {categorias.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nombre}
+            </option>
+          ))}
+        </select>
+        {hayFiltrosActivos && (
+          <button
+            onClick={() => {
+              setQ('')
+              setDecadaId('')
+              setCategoriaId('')
+            }}
+            className="text-xs text-text-secondary underline"
+          >
+            Limpiar
+          </button>
+        )}
       </div>
 
       {loading && <p className="font-sans text-text-secondary text-sm">Cargando...</p>}
@@ -118,7 +192,9 @@ export function AdminContenidoPage() {
                 {items.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-6 text-center text-text-secondary">
-                      Todavía no hay contenido cargado.
+                      {hayFiltrosActivos
+                        ? 'No encontramos contenido con esos criterios.'
+                        : 'Todavía no hay contenido cargado.'}
                     </td>
                   </tr>
                 )}
@@ -132,7 +208,7 @@ export function AdminContenidoPage() {
                 variant="ghost"
                 className="px-3 py-1 text-xs"
                 disabled={pagina <= 1}
-                onClick={() => cargar(pagina - 1)}
+                onClick={() => cargar(pagina - 1, filtros)}
               >
                 ← Anterior
               </Button>
@@ -143,7 +219,7 @@ export function AdminContenidoPage() {
                 variant="ghost"
                 className="px-3 py-1 text-xs"
                 disabled={pagina >= totalPaginas}
-                onClick={() => cargar(pagina + 1)}
+                onClick={() => cargar(pagina + 1, filtros)}
               >
                 Siguiente →
               </Button>

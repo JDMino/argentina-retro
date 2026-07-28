@@ -46,6 +46,7 @@ interface ComentariosAdminResponse {
 export interface ComentariosAdminFiltros {
   aprobado?: boolean
   contenidoId?: string
+  q?: string
 }
 
 export async function getComentariosAdmin(

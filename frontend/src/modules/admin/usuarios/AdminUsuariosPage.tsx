@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { Button } from '../../../shared/components/ui/Button'
 import { Badge } from '../../../shared/components/ui/Badge'
+import { SearchInput } from '../../../shared/components/ui/SearchInput'
 import {
   deleteUsuarioAdmin,
   getUsuariosAdmin,
@@ -15,6 +16,7 @@ export function AdminUsuariosPage() {
   const [usuarios, setUsuarios] = useState<UsuarioAdmin[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [q, setQ] = useState('')
   const [passwordGenerada, setPasswordGenerada] = useState<{ email: string; password: string } | null>(
     null,
   )
@@ -34,7 +36,10 @@ export function AdminUsuariosPage() {
   }
 
   useEffect(() => {
-    cargar()
+    async function cargarInicial() {
+      await cargar()
+    }
+    cargarInicial()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -78,9 +83,20 @@ export function AdminUsuariosPage() {
     }
   }
 
+  const qNormalizado = q.trim().toLowerCase()
+  const usuariosFiltrados = qNormalizado
+    ? usuarios.filter(
+        (u) =>
+          u.email.toLowerCase().includes(qNormalizado) ||
+          (u.nombre ?? '').toLowerCase().includes(qNormalizado),
+      )
+    : usuarios
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="font-sans font-semibold text-2xl text-text">Usuarios</h1>
+
+      <SearchInput value={q} onChange={setQ} placeholder="Buscar por email o nombre..." className="w-full max-w-sm" />
 
       {passwordGenerada && (
         <div className="border border-accent rounded-lg p-4 flex flex-col gap-2 bg-bg-secondary">
@@ -123,7 +139,7 @@ export function AdminUsuariosPage() {
               </tr>
             </thead>
             <tbody>
-              {usuarios.map((usuario) => {
+              {usuariosFiltrados.map((usuario) => {
                 const esUnoMismo = usuario.id === yo?.id
                 return (
                   <tr key={usuario.id} className="border-t border-border">
@@ -176,10 +192,10 @@ export function AdminUsuariosPage() {
                   </tr>
                 )
               })}
-              {usuarios.length === 0 && (
+              {usuariosFiltrados.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-6 text-center text-text-secondary">
-                    No hay usuarios registrados.
+                    {qNormalizado ? 'No encontramos usuarios con esos criterios.' : 'No hay usuarios registrados.'}
                   </td>
                 </tr>
               )}
