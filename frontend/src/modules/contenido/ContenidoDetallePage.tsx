@@ -56,7 +56,7 @@ export function ContenidoDetallePage() {
               <div className="aspect-video">
                 <iframe
                   className="w-full h-full rounded-lg"
-                  src={`https://www.youtube.com/embed/${video.youtubeVideoId}`}
+                  src={`https://www.youtube-nocookie.com/embed/${video.youtubeVideoId}`}
                   title={video.titulo ?? contenido.titulo}
                   allowFullScreen
                 />

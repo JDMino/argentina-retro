@@ -16,7 +16,7 @@ export function PlaylistPlayer({ playlist }: PlaylistPlayerProps) {
       <div className="aspect-video relative z-10 rounded-lg overflow-hidden border border-border bg-bg-secondary">
         <iframe
           className="w-full h-full"
-          src={`https://www.youtube.com/embed/videoseries?list=${playlist.youtubePlaylistId}`}
+          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${playlist.youtubePlaylistId}`}
           title={playlist.nombre}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

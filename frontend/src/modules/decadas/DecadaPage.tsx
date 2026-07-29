@@ -7,6 +7,7 @@ import { WindowFrame } from '../../shared/components/ui/WindowFrame'
 import { Card } from '../../shared/components/ui/Card'
 import { usePlaylist } from './usePlaylist'
 import { PlaylistPlayer } from './PlaylistPlayer'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function DecadaPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -19,6 +20,11 @@ export function DecadaPage() {
     error: errorCategorias,
   } = useCategorias(decada?.id)
   const { playlist, loading: loadingPlaylist } = usePlaylist(decada?.id)
+
+  useDocumentMeta({
+    title: decada?.nombre ?? 'Década',
+    description: decada?.descripcion,
+  })
 
   if (loading) return <p>Cargando...</p>
   if (error) return <p className="text-error">{error}</p>

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "lint": "eslint .",
     "lint:oxc": "oxlint",
     "format": "prettier --write .",

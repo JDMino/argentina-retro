@@ -1,9 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from './AuthContext'
 import { Button } from '../../shared/components/ui/Button'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function PerfilPage() {
   const { usuario, actualizarPerfil, cambiarPassword } = useAuth()
+
+  useDocumentMeta({ title: 'Mi perfil', noindex: true })
 
   const [nombre, setNombre] = useState(usuario?.nombre ?? '')
   const [email, setEmail] = useState(usuario?.email ?? '')

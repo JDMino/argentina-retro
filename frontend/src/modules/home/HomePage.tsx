@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useDecadas } from '../decadas/useDecadas'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function HomePage() {
   const { decadas, loading, error } = useDecadas()
+
+  useDocumentMeta({ title: 'Viajá por la historia argentina' })
 
   if (loading) return <p>Cargando décadas...</p>
   if (error) return <p className="text-error">{error}</p>

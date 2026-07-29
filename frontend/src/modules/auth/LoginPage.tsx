@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { Button } from '../../shared/components/ui/Button'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 const EMAIL_SOPORTE = 'soporte@argentinaretro.com'
 
@@ -13,6 +14,8 @@ interface ModalInfo {
 export function LoginPage() {
   const { login, usuario } = useAuth()
   const navigate = useNavigate()
+
+  useDocumentMeta({ title: 'Ingresar', noindex: true })
   const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

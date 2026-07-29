@@ -2,10 +2,13 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { Button } from '../../shared/components/ui/Button'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function CambiarPasswordObligatorioPage() {
   const { cambiarPassword, logout, usuario, loading } = useAuth()
   const navigate = useNavigate()
+
+  useDocumentMeta({ title: 'Cambiar contraseña', noindex: true })
   const [passwordActual, setPasswordActual] = useState('')
   const [passwordNueva, setPasswordNueva] = useState('')
   const [error, setError] = useState<string | null>(null)

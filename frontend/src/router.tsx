@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState, type ComponentType } from 'react'
 import { createBrowserRouter, Navigate, Outlet, useLocation, useOutlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layout } from './shared/components/layout/Layout'
@@ -8,28 +8,86 @@ import { WarpTunnel } from './shared/components/effects/WarpTunnel'
 import { CategoriaPage } from './modules/categorias/CategoriaPage'
 import { ContenidoDetallePage } from './modules/contenido/ContenidoDetallePage'
 import { BuscadorPage } from './modules/contenido/BuscadorPage'
-import { LoginPage } from './modules/auth/LoginPage'
-import { RegisterPage } from './modules/auth/RegisterPage'
 import { ProtectedRoute } from './modules/auth/ProtectedRoute'
 import { AdminRoute } from './modules/auth/AdminRoute'
-import { PerfilPage } from './modules/auth/PerfilPage'
-import { CambiarPasswordObligatorioPage } from './modules/auth/CambiarPasswordObligatorioPage'
 import { useAuth } from './modules/auth/AuthContext'
-import { MisFavoritosPage } from './modules/favoritos/MisFavoritosPage'
 import { AdminLayout } from './modules/admin/AdminLayout'
-import { AdminHomePage } from './modules/admin/AdminHomePage'
-import { AdminDecadasPage } from './modules/admin/decadas/AdminDecadasPage'
-import { DecadaFormPage } from './modules/admin/decadas/DecadaFormPage'
-import { AdminCategoriasPage } from './modules/admin/categorias/AdminCategoriasPage'
-import { CategoriaFormPage } from './modules/admin/categorias/CategoriaFormPage'
-import { AdminContenidoPage } from './modules/admin/contenido/AdminContenidoPage'
-import { ContenidoFormPage } from './modules/admin/contenido/ContenidoFormPage'
-import { AdminPlaylistsPage } from './modules/admin/playlists/AdminPlaylistsPage'
-import { PlaylistFormPage } from './modules/admin/playlists/PlaylistFormPage'
-import { AdminComentariosPage } from './modules/admin/comentarios/AdminComentariosPage'
-import { AdminEtiquetasPage } from './modules/admin/etiquetas/AdminEtiquetasPage'
-import { AdminUsuariosPage } from './modules/admin/usuarios/AdminUsuariosPage'
-import { UsuarioFormPage } from './modules/admin/usuarios/UsuarioFormPage'
+
+// Helper para adaptar React.lazy() (que espera `{ default: Component }`) al
+// patrón `export function X` (named export) que usa todo el proyecto.
+function lazyNamed<P extends object>(
+  loader: () => Promise<Record<string, ComponentType<P>>>,
+  name: string,
+) {
+  return lazy(() => loader().then((m) => ({ default: m[name] })))
+}
+
+// Páginas de auth/perfil/favoritos: visitadas por una fracción de usuarios,
+// no forman parte de la experiencia núcleo de "viaje en el tiempo".
+const LoginPage = lazyNamed(() => import('./modules/auth/LoginPage'), 'LoginPage')
+const RegisterPage = lazyNamed(() => import('./modules/auth/RegisterPage'), 'RegisterPage')
+const PerfilPage = lazyNamed(() => import('./modules/auth/PerfilPage'), 'PerfilPage')
+const CambiarPasswordObligatorioPage = lazyNamed(
+  () => import('./modules/auth/CambiarPasswordObligatorioPage'),
+  'CambiarPasswordObligatorioPage',
+)
+const MisFavoritosPage = lazyNamed(
+  () => import('./modules/favoritos/MisFavoritosPage'),
+  'MisFavoritosPage',
+)
+
+// Panel admin completo: nunca lo visita un usuario público, así que todo su
+// código (13 páginas) queda en chunks separados que jamás se descargan
+// fuera de /admin.
+const AdminHomePage = lazyNamed(() => import('./modules/admin/AdminHomePage'), 'AdminHomePage')
+const AdminDecadasPage = lazyNamed(
+  () => import('./modules/admin/decadas/AdminDecadasPage'),
+  'AdminDecadasPage',
+)
+const DecadaFormPage = lazyNamed(
+  () => import('./modules/admin/decadas/DecadaFormPage'),
+  'DecadaFormPage',
+)
+const AdminCategoriasPage = lazyNamed(
+  () => import('./modules/admin/categorias/AdminCategoriasPage'),
+  'AdminCategoriasPage',
+)
+const CategoriaFormPage = lazyNamed(
+  () => import('./modules/admin/categorias/CategoriaFormPage'),
+  'CategoriaFormPage',
+)
+const AdminContenidoPage = lazyNamed(
+  () => import('./modules/admin/contenido/AdminContenidoPage'),
+  'AdminContenidoPage',
+)
+const ContenidoFormPage = lazyNamed(
+  () => import('./modules/admin/contenido/ContenidoFormPage'),
+  'ContenidoFormPage',
+)
+const AdminPlaylistsPage = lazyNamed(
+  () => import('./modules/admin/playlists/AdminPlaylistsPage'),
+  'AdminPlaylistsPage',
+)
+const PlaylistFormPage = lazyNamed(
+  () => import('./modules/admin/playlists/PlaylistFormPage'),
+  'PlaylistFormPage',
+)
+const AdminEtiquetasPage = lazyNamed(
+  () => import('./modules/admin/etiquetas/AdminEtiquetasPage'),
+  'AdminEtiquetasPage',
+)
+const AdminComentariosPage = lazyNamed(
+  () => import('./modules/admin/comentarios/AdminComentariosPage'),
+  'AdminComentariosPage',
+)
+const AdminUsuariosPage = lazyNamed(
+  () => import('./modules/admin/usuarios/AdminUsuariosPage'),
+  'AdminUsuariosPage',
+)
+const UsuarioFormPage = lazyNamed(
+  () => import('./modules/admin/usuarios/UsuarioFormPage'),
+  'UsuarioFormPage',
+)
 
 const WARP_DURATION = 700
 
@@ -40,15 +98,30 @@ const DECADA_ACCENTS: Record<string, string> = {
   'los-2000': '#6BC94B',
 }
 
+function esHome(pathname: string) {
+  return pathname === '/'
+}
+
+function esDecadaLanding(pathname: string) {
+  return /^\/decada\/[^/]+$/.test(pathname)
+}
+
 function useWarpActive(pathname: string, duration = 550) {
   const [active, setActive] = useState(false)
-  const isFirst = useRef(true)
+  const prevRef = useRef(pathname)
 
   useEffect(() => {
-    if (isFirst.current) {
-      isFirst.current = false
-      return
-    }
+    const prev = prevRef.current
+    prevRef.current = pathname
+    if (prev === pathname) return
+
+    // El viaje en el tiempo solo se siente al entrar a una década desde el
+    // Home, o al volver de una década al Home — no en cada click interno
+    // (Década→Categoría→Contenido, Buscar, etc.), para que no sea tedioso.
+    const entrandoADecada = esHome(prev) && esDecadaLanding(pathname)
+    const volviendoAHome = esDecadaLanding(prev) && esHome(pathname)
+    if (!entrandoADecada && !volviendoAHome) return
+
     setActive(true)
     const timeout = setTimeout(() => setActive(false), duration)
     return () => clearTimeout(timeout)
@@ -87,7 +160,7 @@ function RootLayout() {
           exit={{ opacity: 0, scale: 1.15, filter: 'blur(10px)' }}
           transition={{ duration: 0.25, ease: 'easeIn' }}
         >
-          {outlet}
+          <Suspense fallback={null}>{outlet}</Suspense>
         </motion.div>
       </AnimatePresence>
     </Layout>
@@ -98,7 +171,14 @@ export const router = createBrowserRouter([
   {
     element: <AppGate />,
     children: [
-      { path: 'cambiar-password', element: <CambiarPasswordObligatorioPage /> },
+      {
+        path: 'cambiar-password',
+        element: (
+          <Suspense fallback={null}>
+            <CambiarPasswordObligatorioPage />
+          </Suspense>
+        ),
+      },
       {
         path: '/',
         element: <RootLayout />,

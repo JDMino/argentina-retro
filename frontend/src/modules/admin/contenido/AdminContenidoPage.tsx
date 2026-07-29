@@ -144,7 +144,8 @@ export function AdminContenidoPage() {
       {!loading && !error && (
         <>
           <div className="border border-border rounded-lg overflow-hidden">
-            <table className="w-full text-sm font-sans">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm font-sans min-w-[640px]">
               <thead>
                 <tr className="bg-bg-secondary text-text-secondary text-left">
                   <th className="px-4 py-2 font-medium">Título</th>
@@ -200,6 +201,7 @@ export function AdminContenidoPage() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
 
           {totalPaginas > 1 && (

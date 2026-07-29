@@ -8,10 +8,13 @@ import { useBuscarContenido, FILTROS_VACIOS, type FiltrosBusqueda } from './useB
 import { Card } from '../../shared/components/ui/Card'
 import { Badge } from '../../shared/components/ui/Badge'
 import { Button } from '../../shared/components/ui/Button'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function BuscadorPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+
+  useDocumentMeta({ title: 'Buscar', noindex: true })
 
   const [filtros, setFiltros] = useState<FiltrosBusqueda>({
     ...FILTROS_VACIOS,

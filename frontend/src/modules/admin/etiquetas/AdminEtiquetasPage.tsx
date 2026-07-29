@@ -161,7 +161,8 @@ export function AdminEtiquetasPage() {
 
       {!loading && !error && (
         <div className="border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm font-sans">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm font-sans min-w-[640px]">
             <thead>
               <tr className="bg-bg-secondary text-text-secondary text-left">
                 <th className="px-4 py-2 font-medium">Nombre</th>
@@ -257,6 +258,7 @@ export function AdminEtiquetasPage() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

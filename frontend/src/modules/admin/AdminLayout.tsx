@@ -1,5 +1,7 @@
+import { Suspense } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', end: true },
@@ -14,6 +16,8 @@ const NAV_ITEMS = [
 
 export function AdminLayout() {
   const { usuario, logout } = useAuth()
+
+  useDocumentMeta({ title: 'Panel administrativo', noindex: true })
 
   return (
     <div className="min-h-screen bg-bg text-text flex">
@@ -63,7 +67,9 @@ export function AdminLayout() {
       </aside>
 
       <main className="flex-1 p-6">
-        <Outlet />
+        <Suspense fallback={<p className="font-sans text-text-secondary text-sm">Cargando...</p>}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   )

@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Generado por `npm run sitemap` contra la API real en el deploy — depende
+# de datos de producción, no se versiona (ver scripts/generate-sitemap.mjs)
+public/sitemap.xml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

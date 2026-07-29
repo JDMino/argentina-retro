@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /admin
+Disallow: /buscar
+Disallow: /login
+Disallow: /registro
+Disallow: /perfil
+Disallow: /favoritos
+Disallow: /cambiar-password
+
+# TODO (Etapa 10): reemplazar por el dominio real una vez desplegado —
+# el spec de robots.txt exige URL absoluta, no relativa.
+Sitemap: https://TU-DOMINIO-AQUI/sitemap.xml

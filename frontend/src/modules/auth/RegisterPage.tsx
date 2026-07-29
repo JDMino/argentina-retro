@@ -2,11 +2,14 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { Button } from '../../shared/components/ui/Button'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function RegisterPage() {
   const { register, usuario } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+
+  useDocumentMeta({ title: 'Crear cuenta', noindex: true })
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

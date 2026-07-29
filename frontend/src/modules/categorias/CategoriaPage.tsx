@@ -4,6 +4,7 @@ import { useCategorias } from './useCategorias'
 import { useContenidoPorCategoria } from './useContenidoPorCategoria'
 import { decadaThemeVars } from '../decadas/decadas.theme'
 import { Card } from '../../shared/components/ui/Card'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function CategoriaPage() {
   const { slug, categoriaSlug } = useParams<{ slug: string; categoriaSlug: string }>()
@@ -20,6 +21,10 @@ export function CategoriaPage() {
     loading: loadingContenidos,
     error: errorContenidos,
   } = useContenidoPorCategoria(decada?.id, categoria?.id)
+
+  useDocumentMeta({
+    title: categoria && decada ? `${categoria.nombre} en ${decada.nombre}` : 'Categoría',
+  })
 
   if (loadingDecadas || loadingCategorias) return <p>Cargando...</p>
   if (errorDecadas) return <p className="text-error">{errorDecadas}</p>

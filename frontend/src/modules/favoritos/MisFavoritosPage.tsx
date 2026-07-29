@@ -2,11 +2,14 @@ import { useNavigate } from 'react-router-dom'
 import { useFavoritos } from './FavoritosContext'
 import { useDecadas } from '../decadas/useDecadas'
 import { Card } from '../../shared/components/ui/Card'
+import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function MisFavoritosPage() {
   const { favoritos, loading } = useFavoritos()
   const { decadas } = useDecadas()
   const navigate = useNavigate()
+
+  useDocumentMeta({ title: 'Mis favoritos', noindex: true })
 
   if (loading) return <p>Cargando tus favoritos...</p>
 
