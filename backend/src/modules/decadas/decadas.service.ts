@@ -22,8 +22,11 @@ export class DecadasService {
     return this.decadasRepository.save(decada);
   }
 
-  findAll(): Promise<Decada[]> {
-    return this.decadasRepository.find({ order: { orden: 'ASC' } });
+  findAll(activa?: boolean): Promise<Decada[]> {
+    return this.decadasRepository.find({
+      where: activa !== undefined ? { activa } : {},
+      order: { orden: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Decada> {
@@ -36,7 +39,7 @@ export class DecadasService {
 
   async findBySlug(slug: string): Promise<Decada> {
     const decada = await this.decadasRepository.findOne({ where: { slug } });
-    if (!decada) {
+    if (!decada || !decada.activa) {
       throw new NotFoundException(`Década con slug "${slug}" no encontrada`);
     }
     return decada;

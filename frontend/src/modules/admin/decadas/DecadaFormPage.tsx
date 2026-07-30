@@ -16,6 +16,8 @@ const VALORES_INICIALES: DecadaInput = {
   anioFin: 1979,
   descripcion: '',
   paleta: { primario: '#f5a623', secundario: '#1a1a1a', acento: '#ffffff' },
+  imagenFondoDesktopUrl: '',
+  imagenFondoMobileUrl: '',
   orden: 0,
   activa: true,
 }
@@ -47,6 +49,8 @@ export function DecadaFormPage() {
           anioFin: decada.anioFin,
           descripcion: decada.descripcion ?? '',
           paleta: decada.paleta ?? VALORES_INICIALES.paleta,
+          imagenFondoDesktopUrl: decada.imagenFondoDesktopUrl ?? '',
+          imagenFondoMobileUrl: decada.imagenFondoMobileUrl ?? '',
           orden: decada.orden,
           activa: decada.activa,
         }),
@@ -62,10 +66,16 @@ export function DecadaFormPage() {
     setError(null)
 
     try {
+      const payload: DecadaInput = {
+        ...form,
+        imagenFondoDesktopUrl: form.imagenFondoDesktopUrl?.trim() || null,
+        imagenFondoMobileUrl: form.imagenFondoMobileUrl?.trim() || null,
+      }
+
       if (esEdicion && id) {
-        await updateDecada(token, id, form)
+        await updateDecada(token, id, payload)
       } else {
-        await createDecada(token, form)
+        await createDecada(token, payload)
       }
       navigate('/admin/decadas')
     } catch (err: any) {
@@ -141,6 +151,29 @@ export function DecadaFormPage() {
             value={form.descripcion}
             onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Fondo desktop (URL)</label>
+            <input
+              className={inputClass}
+              type="url"
+              placeholder="https://..."
+              value={form.imagenFondoDesktopUrl ?? ''}
+              onChange={(e) => setForm({ ...form, imagenFondoDesktopUrl: e.target.value })}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Fondo mobile (URL)</label>
+            <input
+              className={inputClass}
+              type="url"
+              placeholder="https://..."
+              value={form.imagenFondoMobileUrl ?? ''}
+              onChange={(e) => setForm({ ...form, imagenFondoMobileUrl: e.target.value })}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">

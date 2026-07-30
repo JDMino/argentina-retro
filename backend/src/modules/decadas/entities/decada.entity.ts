@@ -24,6 +24,12 @@ export class Decada extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   paleta: Record<string, string> | null;
 
+  @Column({ name: 'imagen_fondo_desktop_url', type: 'varchar', nullable: true })
+  imagenFondoDesktopUrl: string | null;
+
+  @Column({ name: 'imagen_fondo_mobile_url', type: 'varchar', nullable: true })
+  imagenFondoMobileUrl: string | null;
+
   @Column({ type: 'int', default: 0 })
   orden: number;
 

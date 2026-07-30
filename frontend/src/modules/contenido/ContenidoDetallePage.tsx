@@ -4,6 +4,8 @@ import { decadaThemeVars } from '../decadas/decadas.theme'
 import { useDecadas } from '../decadas/useDecadas'
 import { FavoritoButton } from '../../shared/components/ui/FavoritoButton'
 import { ComentariosSection } from './ComentariosSection'
+import { ImagenesCarousel } from './ImagenesCarousel'
+import { VideosPlaylist } from './VideosPlaylist'
 
 export function ContenidoDetallePage() {
   const { contenidoSlug } = useParams<{ contenidoSlug: string }>()
@@ -36,34 +38,11 @@ export function ContenidoDetallePage() {
       )}
 
       {imagenes.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          {imagenes.map((imagen) => (
-            <img
-              key={imagen.id}
-              src={imagen.url}
-              alt={imagen.textoAlternativo ?? ''}
-              className="w-full h-auto rounded-lg border border-border"
-            />
-          ))}
-        </div>
+        <ImagenesCarousel imagenes={imagenes} tituloContenido={contenido.titulo} />
       )}
 
       {videos.length > 0 && (
-        <div className="flex flex-col gap-6 mt-6">
-          {videos.map((video) => (
-            <div key={video.id}>
-              {video.titulo && <p className="text-text-secondary mb-2">{video.titulo}</p>}
-              <div className="aspect-video">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src={`https://www.youtube-nocookie.com/embed/${video.youtubeVideoId}`}
-                  title={video.titulo ?? contenido.titulo}
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        <VideosPlaylist videos={videos} tituloContenido={contenido.titulo} />
       )}
 
       {etiquetas.length > 0 && (

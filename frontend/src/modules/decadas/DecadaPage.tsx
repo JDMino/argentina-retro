@@ -33,6 +33,9 @@ export function DecadaPage() {
   const descripcion = decada.slug === 'los-2000'
     ? <WindowFrame title={decada.nombre}><p>{decada.descripcion}</p></WindowFrame>
     : <p className="text-text-secondary relative z-10">{decada.descripcion}</p>
+  
+  const fondoDesktop = decada.imagenFondoDesktopUrl ?? undefined
+  const fondoMobile = decada.imagenFondoMobileUrl ?? fondoDesktop
 
   return (
     <div
@@ -40,6 +43,27 @@ export function DecadaPage() {
       style={decadaThemeVars(decada.paleta)}
       className="relative min-h-[60vh] -mx-4 px-4 overflow-hidden"
     >
+      {/* Fondo: imagen configurada para el breakpoint, o el color sólido
+          de la década (--color-bg, redefinido por data-decada) si no hay. */}
+      <div
+        className={
+          fondoMobile
+            ? 'absolute inset-0 md:hidden bg-cover bg-center'
+            : 'absolute inset-0 md:hidden bg-bg'
+        }
+        style={fondoMobile ? { backgroundImage: `url(${fondoMobile})` } : undefined}
+        aria-hidden="true"
+      />
+      <div
+        className={
+          fondoDesktop
+            ? 'absolute inset-0 hidden md:block bg-cover bg-center'
+            : 'absolute inset-0 hidden md:block bg-bg'
+        }
+        style={fondoDesktop ? { backgroundImage: `url(${fondoDesktop})` } : undefined}
+        aria-hidden="true"
+      />
+
       <EpocaEffect slug={decada.slug} />
       <h1 className="font-heading relative z-10">{decada.nombre}</h1>
       {descripcion}

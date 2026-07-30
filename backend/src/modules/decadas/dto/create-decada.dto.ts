@@ -3,6 +3,7 @@ import {
   IsInt,
   IsOptional,
   IsBoolean,
+  IsUrl,
   Min,
   Max,
   MaxLength,
@@ -39,6 +40,14 @@ export class CreateDecadaDto {
   @IsOptional()
   @IsObject()
   paleta?: Record<string, string>;
+
+  @IsOptional()
+  @IsUrl({}, { message: 'imagenFondoDesktopUrl debe ser una URL válida' })
+  imagenFondoDesktopUrl?: string | null;
+
+  @IsOptional()
+  @IsUrl({}, { message: 'imagenFondoMobileUrl debe ser una URL válida' })
+  imagenFondoMobileUrl?: string | null;
 
   @IsOptional()
   @IsInt()

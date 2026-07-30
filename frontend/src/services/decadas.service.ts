@@ -18,12 +18,16 @@ export interface Decada {
   anioFin: number
   descripcion: string
   paleta: DecadaPaleta
+  imagenFondoDesktopUrl: string | null
+  imagenFondoMobileUrl: string | null
   orden: number
   activa: boolean
 }
 
-export async function getDecadas(): Promise<Decada[]> {
-  const { data } = await api.get<Decada[]>('/decadas')
+export async function getDecadas(soloActivas?: boolean): Promise<Decada[]> {
+  const { data } = await api.get<Decada[]>('/decadas', {
+    params: soloActivas ? { activa: true } : undefined,
+  })
   return data
 }
 
@@ -34,6 +38,8 @@ export interface DecadaInput {
   anioFin: number
   descripcion?: string
   paleta?: Partial<DecadaPaleta>
+  imagenFondoDesktopUrl: string | null
+  imagenFondoMobileUrl: string | null
   orden?: number
   activa?: boolean
 }

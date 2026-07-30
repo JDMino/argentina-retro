@@ -15,7 +15,7 @@ export function useDecadas(): UseDecadasResult {
   useEffect(() => {
     let cancelled = false
 
-    getDecadas()
+    getDecadas(true)
       .then((data) => {
         if (!cancelled) setDecadas(data)
       })

@@ -23,11 +23,11 @@ export class FavoritosService {
   }
 
   findAllByUsuario(usuarioId: string): Promise<Favorito[]> {
-      return this.favoritosRepository.find({
-        where: { usuarioId },
-        relations: { contenido: { imagenes: true } },
-        order: { createdAt: 'DESC' },
-      });
+    return this.favoritosRepository.find({
+      where: { usuarioId },
+      relations: { contenido: { imagenes: true, categoria: true } },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async remove(usuarioId: string, contenidoId: string): Promise<void> {

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
@@ -17,6 +18,7 @@ import { UpdateDecadaDto } from './dto/update-decada.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { FindDecadasQueryDto } from './dto/find-decadas-query.dto';
 
 @Controller('decadas')
 export class DecadasController {
@@ -30,8 +32,8 @@ export class DecadasController {
   }
 
   @Get()
-  findAll() {
-    return this.decadasService.findAll();
+  findAll(@Query() query: FindDecadasQueryDto) {
+    return this.decadasService.findAll(query.activa);
   }
 
   @Get(':id')

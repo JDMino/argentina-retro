@@ -32,6 +32,7 @@ export class CategoriasService {
       .innerJoin('categoria.contenidos', 'contenido')
       .where('contenido.decadaId = :decadaId', { decadaId })
       .andWhere('categoria.activa = :activa', { activa: true })
+      .andWhere('contenido.publicado = :publicado', { publicado: true })
       .orderBy('categoria.orden', 'ASC')
       .distinct(true)
       .getMany();

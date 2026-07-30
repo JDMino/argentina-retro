@@ -31,7 +31,16 @@ export function MisFavoritosPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {favoritos.map(({ contenido }) => {
           const decada = decadas.find((d) => d.id === contenido.decadaId)
+          const categoriaSlug = contenido.categoria?.slug
           const thumbnail = [...contenido.imagenes].sort((a, b) => a.orden - b.orden)[0]
+
+          const destino =
+            decada && categoriaSlug
+              ? `/decada/${decada.slug}/categoria/${categoriaSlug}/${contenido.slug}`
+              : decada
+                ? `/decada/${decada.slug}`
+                : undefined
+
           return (
             <Card
               key={contenido.id}
@@ -39,7 +48,7 @@ export function MisFavoritosPage() {
               description={contenido.descripcion ?? undefined}
               image={thumbnail?.url}
               imageAlt={thumbnail?.textoAlternativo ?? ''}
-              onClick={decada ? () => navigate(`/decada/${decada.slug}`) : undefined}
+              onClick={destino ? () => navigate(destino) : undefined}
             />
           )
         })}
