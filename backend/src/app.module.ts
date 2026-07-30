@@ -14,6 +14,7 @@ import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FavoritosModule } from './modules/favoritos/favoritos.module';
 import { ComentariosModule } from './modules/comentarios/comentarios.module';
+import { ConfiguracionModule } from './modules/configuracion/configuracion.module';
 import databaseConfig from './config/typeorm.config';
 
 @Module({
@@ -38,6 +39,7 @@ import databaseConfig from './config/typeorm.config';
     AuthModule,
     FavoritosModule,
     ComentariosModule,
+    ConfiguracionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
