@@ -7,7 +7,7 @@ interface WindowFrameProps {
 
 export function WindowFrame({ title, children }: WindowFrameProps) {
   return (
-    <div className="window-2000s">
+    <div className="window-2000s relative z-10">
       <div className="window-2000s-titlebar">
         <span className="window-2000s-title">{title}</span>
         <div className="window-2000s-buttons">

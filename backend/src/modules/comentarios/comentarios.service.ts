@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { Comentario } from './entities/comentario.entity';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { UpdateComentarioDto } from './dto/update-comentario.dto';
+import { FindComentariosQueryDto } from './dto/find-comentarios-query.dto';
 import { FindComentariosAdminQueryDto } from './dto/find-comentarios-admin-query.dto';
 import { ModerarComentarioDto } from './dto/moderar-comentario.dto';
 
@@ -23,20 +24,22 @@ export class ComentariosService {
     private readonly comentariosRepository: Repository<Comentario>,
   ) {}
 
-  findAllByContenido(contenidoId: string): Promise<Comentario[]> {
-    return this.comentariosRepository.find({
-      where: { contenidoId, aprobado: true },
-      relations: { usuario: true },
-      select: {
-        id: true,
-        texto: true,
-        createdAt: true,
-        updatedAt: true,
-        usuarioId: true,
-        usuario: { id: true, nombre: true, email: true },
-      },
-      order: { createdAt: 'DESC' },
-    });
+  async findAllByContenido(query: FindComentariosQueryDto) {
+    const pagina = query.pagina ?? 1;
+    const limite = query.limite ?? 10;
+
+    const [items, total] = await this.comentariosRepository
+      .createQueryBuilder('comentario')
+      .leftJoin('comentario.usuario', 'usuario')
+      .addSelect(['usuario.id', 'usuario.nombre', 'usuario.email'])
+      .where('comentario.contenidoId = :contenidoId', { contenidoId: query.contenidoId })
+      .andWhere('comentario.aprobado = :aprobado', { aprobado: true })
+      .orderBy('comentario.createdAt', 'DESC')
+      .skip((pagina - 1) * limite)
+      .take(limite)
+      .getManyAndCount();
+
+    return { items, total, pagina, limite };
   }
 
   create(usuarioId: string, dto: CreateComentarioDto): Promise<Comentario> {

@@ -19,13 +19,24 @@ export interface Comentario {
   usuario: ComentarioUsuario
 }
 
+interface ComentariosResponse {
+  items: Comentario[]
+  total: number
+  pagina: number
+  limite: number
+}
+
 function authHeader(token: string) {
   return { headers: { Authorization: `Bearer ${token}` } }
 }
 
-export async function getComentarios(contenidoId: string): Promise<Comentario[]> {
-  const { data } = await api.get<Comentario[]>('/comentarios', {
-    params: { contenidoId },
+export async function getComentarios(
+  contenidoId: string,
+  pagina = 1,
+  limite = 10,
+): Promise<ComentariosResponse> {
+  const { data } = await api.get<ComentariosResponse>('/comentarios', {
+    params: { contenidoId, pagina, limite },
   })
   return data
 }

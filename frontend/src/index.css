@@ -10,6 +10,7 @@
   --color-accent: #f5a623;
   --color-accent-hover: #d4880f;
   --color-accent-secondary: #f5a623;
+  --color-accent-tertiary: #f5a623; /* NUEVO */
   --color-error: #ef4444;
   --color-success: #22c55e;
 
@@ -72,6 +73,7 @@
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
   --color-accent-secondary: var(--color-accent-secondary);
+  --color-accent-tertiary: var(--color-accent-tertiary); /* NUEVO */
   --color-error: var(--color-error);
   --color-success: var(--color-success);
   --font-sans: var(--font-sans);
@@ -84,6 +86,7 @@
 
 [data-decada] h1.font-heading {
   font-family: var(--font-heading-actual);
+  color: var(--color-accent-tertiary); /* NUEVO */
 }
 
 [data-decada="los-70"] {

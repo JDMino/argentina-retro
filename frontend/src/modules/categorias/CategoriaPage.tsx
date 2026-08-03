@@ -4,6 +4,7 @@ import { useCategorias } from './useCategorias'
 import { useContenidoPorCategoria } from './useContenidoPorCategoria'
 import { decadaThemeVars } from '../decadas/decadas.theme'
 import { Card } from '../../shared/components/ui/Card'
+import { DecadaAccentBar } from '../../shared/components/ui/DecadaAccentBar'
 import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
 
 export function CategoriaPage() {
@@ -39,7 +40,8 @@ export function CategoriaPage() {
       className="relative min-h-[60vh] -mx-4 px-4"
     >
       <h1 className="font-heading relative z-10">{categoria.nombre}</h1>
-      <p className="text-text-secondary relative z-10">{decada.nombre}</p>
+      <DecadaAccentBar />
+      <p className="text-accent-secondary relative z-10">{decada.nombre}</p>
 
       <div className="relative z-10 mt-8">
         {loadingContenidos && <p>Cargando contenido...</p>}

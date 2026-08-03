@@ -12,7 +12,8 @@ interface ComentariosSectionProps {
 export function ComentariosSection({ contenidoId }: ComentariosSectionProps) {
   const { usuario, token } = useAuth()
   const location = useLocation()
-  const { comentarios, loading, error, crear, editar, borrar } = useComentarios(contenidoId)
+  const { comentarios, loading, error, pagina, totalPaginas, irAPagina, crear, editar, borrar } =
+    useComentarios(contenidoId)
 
   const [texto, setTexto] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -89,7 +90,7 @@ export function ComentariosSection({ contenidoId }: ComentariosSectionProps) {
 
       {loading && <p>Cargando comentarios...</p>}
       {error && <p className="text-error">{error}</p>}
-      {!loading && !error && comentarios.length === 0 && (
+      {!loading && !error && comentarios.length === 0 && pagina === 1 && (
         <p className="text-text-secondary">Todavía no hay comentarios. ¡Sé el primero!</p>
       )}
 
@@ -141,6 +142,40 @@ export function ComentariosSection({ contenidoId }: ComentariosSectionProps) {
           </div>
         ))}
       </div>
+
+      {totalPaginas > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => irAPagina(pagina - 1)}
+            disabled={pagina === 1}
+            className="text-sm px-3 py-1 rounded border border-border text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed hover:border-accent"
+          >
+            Anterior
+          </button>
+
+          {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numeroPagina) => (
+            <button
+              key={numeroPagina}
+              onClick={() => irAPagina(numeroPagina)}
+              className={
+                numeroPagina === pagina
+                  ? 'text-sm w-8 h-8 rounded-full bg-accent text-white'
+                  : 'text-sm w-8 h-8 rounded-full text-text-secondary hover:border hover:border-accent'
+              }
+            >
+              {numeroPagina}
+            </button>
+          ))}
+
+          <button
+            onClick={() => irAPagina(pagina + 1)}
+            disabled={pagina === totalPaginas}
+            className="text-sm px-3 py-1 rounded border border-border text-text-secondary disabled:opacity-40 disabled:cursor-not-allowed hover:border-accent"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -29,7 +29,7 @@ export class ComentariosController {
 
   @Get()
   findAllByContenido(@Query() query: FindComentariosQueryDto) {
-    return this.comentariosService.findAllByContenido(query.contenidoId);
+    return this.comentariosService.findAllByContenido(query);
   }
 
   @Get('admin')

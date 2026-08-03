@@ -3,6 +3,7 @@ import { useContenido } from './useContenido'
 import { decadaThemeVars } from '../decadas/decadas.theme'
 import { useDecadas } from '../decadas/useDecadas'
 import { FavoritoButton } from '../../shared/components/ui/FavoritoButton'
+import { DecadaAccentBar } from '../../shared/components/ui/DecadaAccentBar'
 import { ComentariosSection } from './ComentariosSection'
 import { ImagenesCarousel } from './ImagenesCarousel'
 import { VideosPlaylist } from './VideosPlaylist'
@@ -31,7 +32,8 @@ export function ContenidoDetallePage() {
         <h1 className="font-heading">{contenido.titulo}</h1>
         <FavoritoButton contenidoId={contenido.id} />
       </div>
-      {contenido.anio && <p className="text-text-secondary">{contenido.anio}</p>}
+      <DecadaAccentBar />
+      {contenido.anio && <p className="text-accent-secondary">{contenido.anio}</p>}
 
       {contenido.descripcion && (
         <p className="text-text-secondary mt-4 max-w-2xl">{contenido.descripcion}</p>

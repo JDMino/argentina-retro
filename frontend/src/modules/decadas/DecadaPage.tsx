@@ -5,6 +5,7 @@ import { decadaThemeVars } from './decadas.theme'
 import { EpocaEffect } from './effects/EpocaEffect'
 import { WindowFrame } from '../../shared/components/ui/WindowFrame'
 import { Card } from '../../shared/components/ui/Card'
+import { DecadaAccentBar } from '../../shared/components/ui/DecadaAccentBar'
 import { usePlaylist } from './usePlaylist'
 import { PlaylistPlayer } from './PlaylistPlayer'
 import { useDocumentMeta } from '../../shared/hooks/useDocumentMeta'
@@ -31,9 +32,9 @@ export function DecadaPage() {
   if (!decada) return <p>Década no encontrada.</p>
 
   const descripcion = decada.slug === 'los-2000'
-    ? <WindowFrame title={decada.nombre}><p>{decada.descripcion}</p></WindowFrame>
-    : <p className="text-text-secondary relative z-10">{decada.descripcion}</p>
-  
+    ? <WindowFrame title={decada.nombre}><p className="text-accent-secondary">{decada.descripcion}</p></WindowFrame>
+    : <p className="text-accent-secondary relative z-10">{decada.descripcion}</p>
+
   const fondoDesktop = decada.imagenFondoDesktopUrl ?? undefined
   const fondoMobile = decada.imagenFondoMobileUrl ?? fondoDesktop
 
@@ -66,6 +67,7 @@ export function DecadaPage() {
 
       <EpocaEffect slug={decada.slug} />
       <h1 className="font-heading relative z-10">{decada.nombre}</h1>
+      <DecadaAccentBar />
       {descripcion}
 
       <div className="relative z-10 mt-8">
